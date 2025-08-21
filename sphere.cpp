@@ -6,27 +6,30 @@
 
 
 
-std::vector<Vertex> parseOBJ(){
-
-    std::vector<Vertex> v;
-    std::ifstream file("sphere.obj");
+std::vector<float> parseOBJ() {
+    std::vector<float> vertices;
+    std::ifstream file("sphere1.obj");
     std::string line;
 
-    if(file.is_open()) {
+    if (file.is_open()) {
         while (std::getline(file, line)) {
             std::stringstream ss(line);
             std::string type;
             ss >> type;
 
-            if(type == "v"){
-                Vertex v;
-                ss >> v.x >> v.y >> v.z;
-                v.push_back(v);
+            if (type == "v") {
+                float x, y, z;
+                ss >> x >> y >> z;
+                std::cout << x << std::endl;
+                vertices.push_back(x);
+                vertices.push_back(y);
+                vertices.push_back(z);
             }
         }
-    file.close();
-} else{//handle file opeining error
+        file.close();
+    } else {
+        std::cerr << "failed obj file" << std::endl;
     }
 
-return v
+    return vertices;
 }

@@ -1,10 +1,10 @@
-#pragma once
+#ifndef SPHERE_H
+#define SPHERE_H
 
 #include <vector>
 #include <string>
 
-struct Vertex{
-    float x, y ,z;
-};
 
-std::vector<Vertex> parseOBJ();
+std::vector<float> parseOBJ();
+
+#endif

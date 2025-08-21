@@ -1,7 +1,7 @@
 #include <iostream>
 #include <glad/gl.h>
 #include <GLFW/glfw3.h>
-#include <sphere.h>
+#include "sphere.h"
 
 //vertex shader source code
 const char* vShaderSource = "#version 330 core\n"
@@ -44,7 +44,7 @@ int main()
     //error handling for window
 
     //verticies of our Sphere in 3d space normalized cords
-    std::vector<Vertex> verticies = parseOBJ("sphere.obj");
+    std::vector<float> verticies = parseOBJ();
     
 //GLfloat verticies[] =
 //{
@@ -114,7 +114,17 @@ int main()
     glBindBuffer(GL_ARRAY_BUFFER, VBO);
     //actually creating the buffer and telling it how many verticies are in it.
     // GL_STATIC means that verticies are modified once and used many times
-    glBufferData(GL_ARRAY_BUFFER, sizeof(verticies), verticies, GL_STATIC_DRAW);
+    //glBufferData(GL_ARRAY_BUFFER, sizeof(verticies), verticies, GL_STATIC_DRAW);
+
+
+
+
+    //STOP GO NO FURTHER FIGURE THIS OUT
+    glBufferData(GL_ARRAY_BUFFER, verticies.size(), verticies.data(), GL_STATIC_DRAW);
+ 
+    
+    
+    
     
     //the VAO stores pointers to the different VBOS and allows you
     // to switch between different VBOS wihtout lag
@@ -142,7 +152,10 @@ int main()
         glBindVertexArray(VAO);
         //tells opengl that we are using triangles 0 is the starting 
         //index of our vertices and that we have 3 of them
-        glDrawArrays(GL_TRIANGLES, 0, 3);
+
+        //changed to fit sphere might have to change to actual number
+        //of verticies
+        glDrawArrays(GL_TRIANGLES, 0, verticies.size());
         
 
 
