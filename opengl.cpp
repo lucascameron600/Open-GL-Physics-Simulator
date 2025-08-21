@@ -1,8 +1,8 @@
 #include <iostream>
-
-
 #include <glad/gl.h>
 #include <GLFW/glfw3.h>
+#include <sphere.h>
+
 //vertex shader source code
 const char* vShaderSource = "#version 330 core\n"
 "layout (location = 0) in vec3 aPos;\n"
@@ -43,14 +43,16 @@ int main()
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
     //error handling for window
 
-    //verticies of our traingle in 3d space normalized cords
-    GLfloat verticies[] =
-    {
-        -0.75f, -0.75f,0.0f,
-        0.75f, -0.75f,0.0f,
-        0.0f, 0.75f, 0.0f
-
-    };
+    //verticies of our Sphere in 3d space normalized cords
+    std::vector<Vertex> verticies = parseOBJ("sphere.obj");
+    
+//GLfloat verticies[] =
+//{
+//    -0.75f, -0.75f, 0.0f,
+//    0.75f, -0.75f,0.0f,
+//    0.0f, 0.75f, 0.0f
+//
+//};
 
 
     GLFWwindow* window = glfwCreateWindow(800, 600, "LearnOpenGL", NULL, NULL);
