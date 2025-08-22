@@ -4,6 +4,7 @@
 #include "sphere.h"
 
 
+
 //vertex shader source code
 const char* vShaderSource = "#version 330 core\n"
 "layout (location = 0) in vec4 aPos;\n"
@@ -17,7 +18,7 @@ const char* fShaderSource = "#version 330 core\n"
 "out vec4 FragColor;\n"
 "void main()\n"
 "{\n"
-"   FragColor = vec4(1.0f, 1.0f, 1.0f, 1.0f);\n"
+"   FragColor = vec4(0.0f, 0.0f, 0.0f, 1.0f);\n"
 "}\n\0";
 
 //handles excape key
@@ -69,7 +70,10 @@ int main()
         std::cout << "Failed to initialize GLAD" << std::endl;
         return -1;
     }
-    
+
+
+
+
     glDisable(GL_CULL_FACE);
     glViewport(0, 0, 800, 600);
     int indicies = verticies.size()/3;
@@ -143,6 +147,14 @@ int main()
         //clear screen and change the color 
         glClearColor(1.0f, 0.6f, 0.6f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT);
+
+        bool wireframe = true;
+
+        if (wireframe)
+            glPolygonMode(GL_FRONT_AND_BACK, GL_LINE); // Wireframe mode
+        else
+        glPolygonMode(GL_FRONT_AND_BACK, GL_FILL); // Solid mode
+
         getInput(window);
 
         //activate shader program that we built earlier
@@ -154,8 +166,15 @@ int main()
 
         //changed to fit sphere might have to change to actual number
         //of verticies
-        glDrawArrays(GL_TRIANGLES, 0, verticies.size()/3);
 
+
+
+        glUseProgram(shaderApp);
+
+
+
+        glDrawArrays(GL_TRIANGLES, 0, verticies.size()/3);
+        //glDrawArrays(GL_POINTS, 0, verticies.size() / 3);
 
 
         //render here
