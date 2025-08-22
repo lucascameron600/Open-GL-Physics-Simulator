@@ -3,6 +3,7 @@
 #include <GLFW/glfw3.h>
 #include "sphere.h"
 
+
 //vertex shader source code
 const char* vShaderSource = "#version 330 core\n"
 "layout (location = 0) in vec3 aPos;\n"
@@ -15,7 +16,7 @@ const char* fShaderSource = "#version 330 core\n"
 "out vec4 FragColor;\n"
 "void main()\n"
 "{\n"
-"   FragColor = vec4(0.0f, 0.0f, 0.0f, 1.0f);\n"
+"   FragColor = vec4(1.0f, 1.0f, 1.0f, 1.0f);\n"
 "}\n\0";
 
 //handles excape key
@@ -42,17 +43,14 @@ int main()
     // CORE GLFW profile means we have mot recent functions only
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
     //error handling for window
-
-    //verticies of our Sphere in 3d space normalized cords
-    std::vector<float> verticies = parseOBJ();
     
-//GLfloat verticies[] =
-//{
-//    -0.75f, -0.75f, 0.0f,
-//    0.75f, -0.75f,0.0f,
-//    0.0f, 0.75f, 0.0f
-//
-//};
+    //verticies of our Sphere in 3d space normalized cords
+    OBJdata data = parseOBJ();
+
+    std::vector<GLfloat> verticies = data.finalVerticies;
+    //std::vector<GLfloat> finalVerticies = data.finalVerticies;
+    
+
 
 
     GLFWwindow* window = glfwCreateWindow(800, 600, "LearnOpenGL", NULL, NULL);
@@ -71,9 +69,9 @@ int main()
         return -1;
     }
     
-
+    glDisable(GL_CULL_FACE);
     glViewport(0, 0, 800, 600);
-
+    int indicies = verticies.size()/3;
     //unisgned integer shader object v shader is the name
     GLuint vShader = glCreateShader(GL_VERTEX_SHADER);
     //we must attach the shader 1 means number of strings in the array
@@ -120,8 +118,8 @@ int main()
 
 
     //STOP GO NO FURTHER FIGURE THIS OUT
-    glBufferData(GL_ARRAY_BUFFER, verticies.size(), verticies.data(), GL_STATIC_DRAW);
- 
+    glBufferData(GL_ARRAY_BUFFER, verticies.size()*sizeof(GLfloat),verticies.data(), GL_STATIC_DRAW);
+    //glBufferData(GL_ARRAY_BUFFER, sizeof(triangleVertices), triangleVertices, GL_STATIC_DRAW);
     
     
     
@@ -155,8 +153,8 @@ int main()
 
         //changed to fit sphere might have to change to actual number
         //of verticies
-        glDrawArrays(GL_TRIANGLES, 0, verticies.size());
-        
+        glDrawArrays(GL_TRIANGLES, 0, verticies.size()/3);
+
 
 
         //render here
