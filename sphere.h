@@ -7,7 +7,7 @@
 
 struct OBJdata {
       std::vector<GLfloat> verticies;
-    std::vector<GLfloat> finalVerticies;
+      std::vector<GLfloat> finalVerticies;
 };
 OBJdata parseOBJ();
 
