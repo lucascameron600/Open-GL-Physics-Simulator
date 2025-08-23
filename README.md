@@ -5,6 +5,8 @@
 
 <img width="813" height="838" alt="image" src="https://github.com/user-attachments/assets/dbf2a4ae-39de-4a62-a311-c80029e8977a" />
 
+![giphy](https://github.com/user-attachments/assets/e7f99bc2-9cfe-49c9-95c2-74c7e9a7ca61)
+
 
 g++ opengl.cpp sphere.cpp sphere.h gl.c -o app -Iinclude -lglfw -ldl -lGL
 
