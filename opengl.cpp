@@ -37,12 +37,17 @@ gl_Position = projection * view * model * vec4(aPos, 1.0);
 
 
 //Fragment Shader source code
-const char* fShaderSource = "#version 330 core\n"
-"out vec4 FragColor;\n"
-"void main()\n"
-"{\n"
-"   FragColor = vec4(0.0f, 0.0f, 0.0f, 1.0f);\n"
-"}\n\0";
+const char* fShaderSource = R"glsl(
+#version 330 core
+out vec4 FragColor;
+    
+uniform vec4 inputColor;
+    
+void main()
+{
+    FragColor = inputColor;
+}
+)glsl";
 
 
 //helps us with resizing glfwfamecallback
@@ -235,14 +240,28 @@ int main()
         float currentFrame = glfwGetTime();
         deltaTime = currentFrame - lastFrame;
         lastFrame = currentFrame;
+        // FPS counter
+    static float timer = 0.0f;
+    static int frames = 0;
+
+    frames++;
+    timer += deltaTime;
+
+    if (timer >= 1.0f)
+    {
+        float fps = frames / timer;
+        std::cout << "FPS: " << fps << std::endl;
+        frames = 0;
+        timer = 0.0f;
+    }   
 
         //apply gravity
         firstsphere.sphereVelocity.y += gravity * deltaTime;
         firstsphere.spherePos += firstsphere.sphereVelocity * deltaTime;
         
         //floor collision
-        if (firstsphere.spherePos.y < 0.0f) {
-            firstsphere.spherePos.y = 0.0f;
+        if (firstsphere.spherePos.y < 1.0f) {
+            firstsphere.spherePos.y = 1.0f;
             firstsphere.sphereVelocity.y = -firstsphere.sphereVelocity.y;
     
         }
@@ -252,7 +271,7 @@ int main()
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         //Change between a wireframe fill and full fill helps
         //to see the 3d component without lighting
-        bool wireframe = true;
+        bool wireframe = false;
         if (wireframe)
             glPolygonMode(GL_FRONT_AND_BACK, GL_LINE); // Wireframe mode
         else
@@ -289,9 +308,13 @@ int main()
         ////////////////////////////
         glm::mat4 floormodel = glm::mat4(1.0f);
         glUniformMatrix4fv(glGetUniformLocation(shaderApp, "model"), 1, GL_FALSE, glm::value_ptr(floormodel));
+        //setting color for frament shader to color floor
+        glUniform4f(glGetUniformLocation(shaderApp, "inputColor"), 0.5f, 0.5f, 0.5f, 1.0f);
         glDrawArrays(GL_TRIANGLES, sphereVertexCount, floorVertexCount);
 
         glUniformMatrix4fv(glGetUniformLocation(shaderApp, "model"), 1, GL_FALSE, glm::value_ptr(model));
+        //sending input color to fragment shader to change color for sphere
+        glUniform4f(glGetUniformLocation(shaderApp, "inputColor"), 0.0f, 0.2f, 1.0f, 1.0f);
         glDrawArrays(GL_TRIANGLES, 0, sphereVertexCount);
         //render here
         //make sure you swap the buffers!!!!
