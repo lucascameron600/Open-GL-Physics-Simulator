@@ -3,6 +3,9 @@
 
 <img width="812" height="633" alt="image" src="https://github.com/user-attachments/assets/05e27793-141e-4434-8547-cb7ef0807589" />
 
+<img width="813" height="838" alt="image" src="https://github.com/user-attachments/assets/dbf2a4ae-39de-4a62-a311-c80029e8977a" />
+
+
 g++ opengl.cpp sphere.cpp sphere.h gl.c -o app -Iinclude -lglfw -ldl -lGL
 
 
