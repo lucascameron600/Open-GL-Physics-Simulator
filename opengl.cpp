@@ -22,18 +22,18 @@
 //transformations
 
 const char* vShaderSource = R"glsl(
-    #version 330 core
-    layout (location = 0) in vec3 aPos;
+#version 330 core
+layout (location = 0) in vec3 aPos;
     
-    uniform mat4 model;
-    uniform mat4 view;
-    uniform mat4 projection;
+uniform mat4 model;
+uniform mat4 view;
+uniform mat4 projection;
     
-    void main()
-    {
-        gl_Position = projection * view * model * vec4(aPos, 1.0);
-    }
-    )glsl";
+void main()
+{
+gl_Position = projection * view * model * vec4(aPos, 1.0);
+}
+)glsl";
 
 
 //Fragment Shader source code
@@ -51,13 +51,25 @@ void framebuffer_size_callback(GLFWwindow* window, int width, int height)
     glViewport(0, 0, width, height);
 }
 
+GLfloat floorV[] = {
+    
+    -5.0f, 0.0f, -5.0f,
+     5.0f, 0.0f, -5.0f,
+     5.0f, 0.0f,  5.0f,
+
+    -5.0f, 0.0f, -5.0f,
+     5.0f, 0.0f,  5.0f,
+    -5.0f, 0.0f,  5.0f
+};
 //cameraPos camera front and camera up help us define the space we
 //will move around based on these cordingates we also
 //have camera up 
 glm::vec3 cameraPos = glm::vec3(0.0f, 0.0f, 3.0f);
 glm::vec3 cameraFront = glm::vec3(0.0f, 0.0f, -1.0f);
 glm::vec3 cameraUp = glm::vec3(0.0f, 1.0f, 0.0f);
-
+//////////////////////////////////////////////////////////
+/////////////GLOBALCONSTANTS////////////////////////
+////////////////////////////////
 //helps adjust rate at which camera moves
 float cameraSpeed = 0.01f;
 
@@ -66,11 +78,16 @@ float fov          = 90.0f;
 float screenWidth = 800;
 float screenHeight = 800;
 float aspectRatio  = (screenWidth / screenHeight);
-
+//acceleration constant for gravity
+const float gravity = -9.8f;
 //this helps us get depth perception. nearplane is the closest we will render verticies and farplane
 //is the farthest
 float nearPlane    = 0.1f;
 float farPlane     = 100.0f;
+//handle time
+float deltaTime = 0.0f;
+float lastFrame = 0.0f;
+
 
 //handles excape key and wasd
 void getInput(GLFWwindow *window)
@@ -92,11 +109,21 @@ void getInput(GLFWwindow *window)
         cameraPos -= glm::normalize(glm::cross(cameraFront, cameraUp)) * cameraSpeed;
     if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
         cameraPos += glm::normalize(glm::cross(cameraFront, cameraUp)) * cameraSpeed;
+    if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS)
+        cameraPos += cameraUp * cameraSpeed;
+    if (glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS)
+        cameraPos -= cameraUp * cameraSpeed;
 }
 
 
 int main()
 {
+    std::vector<Sphere> spheres;
+
+    Sphere firstsphere;
+
+
+
     //initialize GLFW
     glfwInit();
     //version 3.3
@@ -106,16 +133,9 @@ int main()
     // CORE GLFW profile means we have mot recent functions only
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
     //error handling for window
+
+
     
-    //verticies of our Sphere in 3d space normalized cords
-    OBJdata data = parseOBJ();
-
-    std::vector<GLfloat> verticies = data.finalVerticies;
-    //std::vector<GLfloat> finalVerticies = data.finalVerticies;
-    
-
-
-
     GLFWwindow* window = glfwCreateWindow(screenWidth, screenHeight, "LearnOpenGL", NULL, NULL);
     if (window == NULL)
     {
@@ -125,6 +145,18 @@ int main()
     }
     //ensures that glfw associates the window we are using with the commands we give it
     glfwMakeContextCurrent(window);
+
+    //verticies of our Sphere in 3d space normalized cords
+    OBJdata data = parseOBJ();
+
+    std::vector<GLfloat> verticies = data.finalVerticies;
+    std::vector<GLfloat> combinedVerticies = verticies;
+    combinedVerticies.insert(combinedVerticies.end(), std::begin(floorV), std::end(floorV));
+    int sphereVertexCount = verticies.size() / 3;
+    int floorVertexCount = sizeof(floorV) / sizeof(GLfloat) / 3;
+
+    //std::vector<GLfloat> finalVerticies = data.finalVerticies;
+
     //Glad error handling
     if (!gladLoadGL(glfwGetProcAddress))
     {
@@ -132,12 +164,11 @@ int main()
         return -1;
     }
 
-
-
-
     glDisable(GL_CULL_FACE);
     glViewport(0, 0, screenWidth, screenHeight);
-    int indicies = verticies.size()/3;
+    glEnable(GL_DEPTH_TEST);
+/////////////////////////////////////////////////////////////
+///////////////SHADERS SPHERE//////////////////////////
     //unisgned integer shader object v shader is the name
     GLuint vShader = glCreateShader(GL_VERTEX_SHADER);
     //we must attach the shader 1 means number of strings in the array
@@ -146,12 +177,10 @@ int main()
     glShaderSource(vShader, 1 , &vShaderSource, NULL);
     //compile shader
     glCompileShader(vShader);
-
     //exact same steps from above but here
     GLuint fShader = glCreateShader(GL_FRAGMENT_SHADER);
     glShaderSource(fShader, 1 , &fShaderSource, NULL);
     glCompileShader(fShader);
-
     //generating a shader program to link everything
     GLuint shaderApp = glCreateProgram();
     //attaching vshader and fshader to the app
@@ -159,16 +188,14 @@ int main()
     glAttachShader(shaderApp, fShader);
     //linking the program????
     glLinkProgram(shaderApp);
-    
     //deleting shaders after we are done with them because they are already linked to the program
     glDeleteShader(vShader);
     glDeleteShader(fShader);
-
     //need to create a vertex buffer to store all of these things
     //before we send them to the GPU
+
     //Create a Vertex buffer from gluint
     GLuint VAO, VBO;
-    
     //glm::mat4 projection = glm::ortho(.5f,.5f,,,);
     glGenVertexArrays(1, &VAO);
     //Gen the buffer and bind it to the adress of the vbo
@@ -181,39 +208,51 @@ int main()
     // GL_STATIC means that verticies are modified once and used many times
     //glBufferData(GL_ARRAY_BUFFER, sizeof(verticies), verticies, GL_STATIC_DRAW);
 
-
-
-
     //STOP GO NO FURTHER FIGURE THIS OUT
-    glBufferData(GL_ARRAY_BUFFER, verticies.size()*sizeof(GLfloat),verticies.data(), GL_STATIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, combinedVerticies.size()*sizeof(GLfloat),combinedVerticies.data(), GL_STATIC_DRAW);
+    //single traingle buffer data
     //glBufferData(GL_ARRAY_BUFFER, sizeof(triangleVertices), triangleVertices, GL_STATIC_DRAW);
-    
-    
-    
-    
+
     //the VAO stores pointers to the different VBOS and allows you
     // to switch between different VBOS wihtout lag
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3*sizeof(float), (void*)0);
     //enables vertex attrib pointer
     glEnableVertexAttribArray(0);
-
     //these two lines unbind the buffer and vao to help protect out buffers and arrays
     //from being changed
     glBindBuffer(GL_ARRAY_BUFFER, 0);
     glBindVertexArray(0);
-    
-    glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
-    //main while loop
 
+
+    //main while loop
 
     while(!glfwWindowShouldClose(window))
     {
+
+        //get getting delta time in order to update pysics based
+        //on time passed reguardless of framerate
+        //helps us get smooth motion between frames
+        float currentFrame = glfwGetTime();
+        deltaTime = currentFrame - lastFrame;
+        lastFrame = currentFrame;
+
+        //apply gravity
+        firstsphere.sphereVelocity.y += gravity * deltaTime;
+        firstsphere.spherePos += firstsphere.sphereVelocity * deltaTime;
+        
+        //floor collision
+        if (firstsphere.spherePos.y < 0.0f) {
+            firstsphere.spherePos.y = 0.0f;
+            firstsphere.sphereVelocity.y = -firstsphere.sphereVelocity.y;
+    
+        }
+
         //clear screen and change the color 
         glClearColor(1.0f, 0.6f, 0.6f, 1.0f);
-        glClear(GL_COLOR_BUFFER_BIT);
-
-        bool wireframe = false;
-
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+        //Change between a wireframe fill and full fill helps
+        //to see the 3d component without lighting
+        bool wireframe = true;
         if (wireframe)
             glPolygonMode(GL_FRONT_AND_BACK, GL_LINE); // Wireframe mode
         else
@@ -230,45 +269,41 @@ int main()
         // unsure how this works entirely.
         //projection uses fov in radians along with aspect ratio and our plane
         //cutoffs to help us define the 3d space we are in. it makes sure we have depth perspective.
-        glm::mat4 model = glm::mat4(1.0f); 
-        glm::mat4 view = glm::lookAt(cameraPos, cameraPos + cameraFront, cameraUp);
-        glm::mat4 projection = glm::perspective(glm::radians(fov), aspectRatio, nearPlane, farPlane);
+        //this was before gravity//glm::mat4 model =       glm::mat4(1.0f); 
+        glm::mat4 model =       glm::translate(glm::mat4(1.0f), firstsphere.spherePos);
+        glm::mat4 view =        glm::lookAt(cameraPos, cameraPos + cameraFront, cameraUp);
+        glm::mat4 projection =  glm::perspective(glm::radians(fov), aspectRatio, nearPlane, farPlane);
 
         //here we are sending the matricies to the GPU using a pointer to where they start
-        glUniformMatrix4fv(glGetUniformLocation(shaderApp, "model"), 1, GL_FALSE, glm::value_ptr(model));
+        //sglUniformMatrix4fv(glGetUniformLocation(shaderApp, "model"), 1, GL_FALSE, glm::value_ptr(model));
         glUniformMatrix4fv(glGetUniformLocation(shaderApp, "view"), 1, GL_FALSE, glm::value_ptr(view));
         glUniformMatrix4fv(glGetUniformLocation(shaderApp, "projection"), 1, GL_FALSE, glm::value_ptr(projection));
-
 
         //bind all of our VBOs inside our VAO tells open gl we are using this VAO
         glBindVertexArray(VAO);
         //tells opengl that we are using triangles 0 is the starting 
         //index of our vertices and that we have 3 of them
 
-        //changed to fit sphere might have to change to actual number
-        //of verticies
+        //////////////////////////////////////////////////////
+        //draw floor then sphere
+        ////////////////////////////
+        glm::mat4 floormodel = glm::mat4(1.0f);
+        glUniformMatrix4fv(glGetUniformLocation(shaderApp, "model"), 1, GL_FALSE, glm::value_ptr(floormodel));
+        glDrawArrays(GL_TRIANGLES, sphereVertexCount, floorVertexCount);
 
-
-
-        glUseProgram(shaderApp);
-
-
-
-        glDrawArrays(GL_TRIANGLES, 0, verticies.size()/3);
-        //glDrawArrays(GL_POINTS, 0, verticies.size() / 3);
-
-
+        glUniformMatrix4fv(glGetUniformLocation(shaderApp, "model"), 1, GL_FALSE, glm::value_ptr(model));
+        glDrawArrays(GL_TRIANGLES, 0, sphereVertexCount);
         //render here
-        //
-        //
-        //swap buffers
-        //make sure you swap the buffers, why not quite sure yet.
+        //make sure you swap the buffers!!!!
         glfwSwapBuffers(window);
         glfwPollEvents();    
     }
-    
+    //clean up vertex buffer and vertex array on gpu after all work is done
     glDeleteVertexArrays(1, &VAO);
     glDeleteBuffers(1, &VBO);
+
+
+
 
     glfwTerminate();
     return 0;
