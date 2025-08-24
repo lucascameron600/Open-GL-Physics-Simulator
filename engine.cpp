@@ -1,0 +1,77 @@
+#include <vector>
+#include "engine.h"
+#include <glm/glm.hpp>
+#include <glm/gtc/constants.hpp>
+#include "sphere.h"
+
+    //default ctor
+    Engine::Engine(float gravity)
+        : gravity(gravity) {}
+
+    void Engine::updatePhysics(Sphere& sphere, float deltaTime){
+            //temporary vertex to store sphere pos
+        glm::vec3 temporary = sphere.spherePos;
+        //main impplementation of verlet integration(predicting next step
+        //based on motion)
+        sphere.spherePos = sphere.spherePos + (sphere.spherePos -sphere.prevPos) + sphere.acceleration * (deltaTime*deltaTime);
+        //updates position of last frame
+        sphere.prevPos = temporary;
+        //makes sure the force from this fame doesent effect the next
+        sphere.acceleration = glm::vec3(0.0f);
+    }
+    void Engine::putForce(Sphere& sphere, glm::vec3 force, float mass){
+        sphere.acceleration += force/mass;
+    }
+    void Engine::checkCollision(Sphere& sphere1, Sphere& sphere2){
+        glm::vec3 delta = sphere2.spherePos - sphere1.spherePos;
+        float dist = glm::length(delta);
+        float minDist = sphere1.radius + sphere2.radius;
+
+        if (dist < minDist && dist > 0.0f)
+        {
+            glm::vec3 correction = delta * ((minDist - dist) / dist * 0.5f);
+            sphere1.spherePos -= correction;
+            sphere2.spherePos += correction;
+        }
+    }
+    void Engine::floorCollision(Sphere& sphere, float floorY){
+        if(sphere.spherePos.y - sphere.radius < floorY){
+            glm::vec3 velocity = sphere.spherePos - sphere.prevPos;
+            sphere.spherePos.y = floorY + sphere.radius;
+            velocity.y *= -1;
+            sphere.prevPos = sphere.spherePos - velocity;
+    
+        }
+    }
+    void Engine::boundaryCollision(Sphere& sphere, float boundaryMinx, float boundaryMaxx, float boundaryMiny, float boundaryMaxy, float boundaryMinz, float boundaryMaxz){
+        glm::vec3& pos = sphere.spherePos;
+        glm::vec3& vel = sphere.sphereVelocity;
+        //float sphere.radius = 1.0f; // Approximate radius of your sphere
+    
+        
+        if (pos.x - sphere.radius < boundaryMinx) {
+            pos.x = boundaryMinx + sphere.radius;
+            vel.x *= -1.0f;
+        } else if (pos.x + sphere.radius > boundaryMaxx) {
+            pos.x = boundaryMaxx - sphere.radius;
+            vel.x *= -1.0f;
+        }
+    
+        
+        if (pos.y - sphere.radius < boundaryMiny) {
+            pos.y = boundaryMiny + sphere.radius;
+            vel.y *= -1.0f;
+        } else if (pos.y + sphere.radius > boundaryMaxy) {
+            pos.y = boundaryMaxy - sphere.radius;
+            vel.y *= -1.0f;
+        }
+    
+    
+        if (pos.z - sphere.radius < boundaryMinz) {
+            pos.z = boundaryMinz + sphere.radius;
+            vel.z *= -1.0f;
+        } else if (pos.z + sphere.radius > boundaryMaxz) {
+            pos.z = boundaryMaxz - sphere.radius;
+            vel.z *= -1.0f;
+        }
+    }

@@ -1,6 +1,7 @@
 #include <iostream>
 #include <glad/gl.h>
 #include <GLFW/glfw3.h>
+#include "engine.h"
 #include "sphere.h"
 #include <glm/glm.hpp>
 #include <glm/gtc/type_ptr.hpp>
@@ -16,24 +17,24 @@ void framebuffer_size_callback(GLFWwindow* window, int width, int height)
 {
     glViewport(0, 0, width, height);
 }
-float boundaryMaxx = 30.0f;
-float boundaryMinx = -30.0f;
+float boundaryMaxx = 50.0f;
+float boundaryMinx = -50.0f;
 
-float boundaryMaxy = 30.0f;
+float boundaryMaxy = 50.0f;
 float boundaryMiny = 0.0f;
 
-float boundaryMaxz = 30.0f;
-float boundaryMinz = -30.0f;
+float boundaryMaxz = 50.0f;
+float boundaryMinz = -50.0f;
 
 GLfloat floorV[] = {
     
-    -30.0f, 0.0f, -30.0f,
-     30.0f, 0.0f, -30.0f,
-     30.0f, 0.0f,  30.0f,
+    -50.0f, 0.0f, -50.0f,
+     50.0f, 0.0f, -50.0f,
+     50.0f, 0.0f,  50.0f,
 
-    -30.0f, 0.0f, -30.0f,
-     30.0f, 0.0f,  30.0f,
-    -30.0f, 0.0f,  30.0f
+    -50.0f, 0.0f, -50.0f,
+     50.0f, 0.0f,  50.0f,
+    -50.0f, 0.0f,  50.0f
 };
 
 
@@ -47,7 +48,7 @@ glm::vec3 cameraUp = glm::vec3(0.0f, 1.0f, 0.0f);
 /////////////GLOBALCONSTANTS////////////////////////
 ////////////////////////////////
 //helps adjust rate at which camera moves
-float cameraSpeed = 1.0f;
+float cameraSpeed = 10.0f;
 
 //fov set to whatever the user wants 
 float fov          = 90.0f;
@@ -64,8 +65,8 @@ float farPlane     = 100.0f;
 //handle time
 float deltaTime = 0.0f;
 float lastFrame = 0.0f;
-
-
+//for generating spheres
+bool bKeyPressed = false;
 //handles excape key and wasd
 void getInput(GLFWwindow *window)
 {
@@ -90,12 +91,16 @@ void getInput(GLFWwindow *window)
         cameraPos += cameraUp * cameraSpeed * deltaTime;
     if (glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS)
         cameraPos -= cameraUp * cameraSpeed * deltaTime;
+
 }
 
 
 int main()
 {
-    std::vector<Sphere> spheres = genSpheres();
+    Engine Engine;
+    int firstSpheres = 5;
+    int addBalls = 1;
+    std::vector<Sphere> spheres = genSpheres(firstSpheres);
 
     Sphere firstsphere;
 
@@ -208,13 +213,6 @@ int main()
     frames++;
     timer += deltaTime;
 
-    if (timer >= 1.0f)
-    {
-        float fps = frames / timer;
-        std::cout << "FPS: " << fps << std::endl;
-        frames = 0;
-        timer = 0.0f;
-    }   
 
 
 
@@ -231,6 +229,7 @@ int main()
         ImGui::SliderFloat("Camera Speed", &cameraSpeed, 1.0f, 100.0f);
         ImGui::SliderFloat("Gravity", &gravity, 0.0f, -30.0f);
         ImGui::SliderFloat("FOV", &fov, 30.0f, 120.0f);
+        ImGui::SliderInt("Add Balls", &addBalls, 1, 20);
         ImGui::Text("Sphere Count: %zu", spheres.size());
         ImGui::Text("Sphere Y Position: %.2f", spheres[0].spherePos.y);
         ImGui::Text("FPS: %.1f", 1.0f / deltaTime);
@@ -279,45 +278,57 @@ int main()
         glUniform4f(glGetUniformLocation(shaderApp, "inputColor"), 0.5f, 0.5f, 0.4f, 1.0f);
         glDrawArrays(GL_TRIANGLES, sphereVertexCount, floorVertexCount);
 
-        
+
         //glUniformMatrix4fv(glGetUniformLocation(shaderApp, "model"), 1, GL_FALSE, glm::value_ptr(model));
         //sending input color to fragment shader to change color for sphere
         //glUniform4f(glGetUniformLocation(shaderApp, "inputColor"), 0.1f, 0.9f, 0.1f, 1.0f);
         //glDrawArrays(GL_TRIANGLES, 0, sphereVertexCount);
         //render here
         //make sure you swap the buffers!!!!
-        if (glfwGetKey(window, GLFW_KEY_B) == GLFW_PRESS) {
 
-                Sphere s;
-                s.spherePos = glm::vec3(
-                    (rand() % 100 - 50) / 10.0f,
-                    (rand() % 100) / 5.0f,
-                    (rand() % 100 - 50) / 10.0f);
-                spheres.push_back(s);
+        renderSpheres(shaderApp, spheres, sphereVertexCount);
+        //if (glfwGetKey(window, GLFW_KEY_B) == GLFW_PRESS) {
+        //    Sphere s;
+        //    s.spherePos = glm::vec3(
+        //        (rand() % 31) ,
+        //        (5.0f),
+        //        (rand() % 31) );
+        //    spheres.push_back(s);
+    //
+        //}
 
+
+    // Inside your game loop:
+
+    if (glfwGetKey(window, GLFW_KEY_B) == GLFW_PRESS) {
+        if (!bKeyPressed) {
+            addSpheres(spheres, addBalls);
+            bKeyPressed = true;
         }
-        RenderSpheres(shaderApp, spheres, sphereVertexCount);
-
+    } else {
+        bKeyPressed = false;
+    }
         const float fixedDeltaTime = 0.016f;
 
         while(physicsAccumulator >= fixedDeltaTime){
+        
         for(Sphere& sphere : spheres){
-            sphere.putForce(glm::vec3(0.0f, gravity, 0.0f), 0.1f);
+            Engine.putForce(sphere, glm::vec3(0.0f, gravity, 0.0f), 0.1f);
         }
 
         for(Sphere& sphere : spheres){
-            sphere.updatePhysics(fixedDeltaTime);
+            Engine.updatePhysics(sphere, fixedDeltaTime);
         }
         for (size_t i = 0; i < spheres.size(); ++i) {
             for (size_t j = i + 1; j < spheres.size(); ++j) {
-            spheres[i].checkCollision(spheres[j]);
+            Engine.checkCollision(spheres[i], spheres[j]);
             }
         }
         for(Sphere& sphere : spheres){
-            sphere.floorCollision(0.0f);
+            Engine.floorCollision(sphere, 0.0f);
         }
         for(Sphere& sphere : spheres){
-            sphere.boundaryCollision(boundaryMinx, boundaryMaxx, boundaryMiny, boundaryMaxy, boundaryMinz, boundaryMaxz);
+            Engine.boundaryCollision(sphere, boundaryMinx, boundaryMaxx, boundaryMiny, boundaryMaxy, boundaryMinz, boundaryMaxz);
         }
         physicsAccumulator -= fixedDeltaTime;
     }
