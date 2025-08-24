@@ -279,6 +279,7 @@ int main()
         glUniform4f(glGetUniformLocation(shaderApp, "inputColor"), 0.5f, 0.5f, 0.4f, 1.0f);
         glDrawArrays(GL_TRIANGLES, sphereVertexCount, floorVertexCount);
 
+        
         //glUniformMatrix4fv(glGetUniformLocation(shaderApp, "model"), 1, GL_FALSE, glm::value_ptr(model));
         //sending input color to fragment shader to change color for sphere
         //glUniform4f(glGetUniformLocation(shaderApp, "inputColor"), 0.1f, 0.9f, 0.1f, 1.0f);

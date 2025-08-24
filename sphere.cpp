@@ -69,12 +69,16 @@ std::vector<Sphere> genSpheres(){
     }
     return spheres;
 }
-
+// this 
 void RenderSpheres(GLuint shaderProgram, std::vector<Sphere>& spheres, int vertexCount) {
     for (Sphere& sphere : spheres) {
+        //matrix transformation by multiplying shere pos with identity matrix sets that to model we will send to shader
         glm::mat4 model = glm::translate(glm::mat4(1.0f), sphere.spherePos);
+        //what part of the shader we are using and a pointer to it
         glUniformMatrix4fv(glGetUniformLocation(shaderProgram, "model"), 1, GL_FALSE, glm::value_ptr(model));
+        //sets color for shader
         glUniform4f(glGetUniformLocation(shaderProgram, "inputColor"), 0.1f, 0.9f, 0.1f, 1.0f);
+        //draws
         glDrawArrays(GL_TRIANGLES, 0, vertexCount);
     }
 }
@@ -85,9 +89,14 @@ void Sphere::setSphereColor(glm::vec4& color) {
 }
 
 void Sphere::updatePhysics(float deltaTime){
+    //temporary vertex to store sphere pos
     glm::vec3 temporary = spherePos;
+    //main impplementation of verlet integration(predicting next step
+    //based on motion)
     spherePos = spherePos + (spherePos -prevPos) + acceleration * (deltaTime*deltaTime);
+    //updates position of last frame
     prevPos = temporary;
+    //makes sure the force from this fame doesent effect the next
     acceleration = glm::vec3(0.0f);
 }
 
