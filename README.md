@@ -8,7 +8,18 @@
 ![giphy](https://github.com/user-attachments/assets/e7f99bc2-9cfe-49c9-95c2-74c7e9a7ca61)
 
 
-g++ opengl.cpp sphere.cpp sphere.h gl.c -o app -Iinclude -lglfw -ldl -lGL
+g++ opengl.cpp sphere.cpp gl.c \
+third_party/imgui/imgui.cpp \
+third_party/imgui/imgui_draw.cpp \
+third_party/imgui/imgui_tables.cpp \
+third_party/imgui/imgui_widgets.cpp \
+third_party/imgui/backends/imgui_impl_glfw.cpp \
+third_party/imgui/backends/imgui_impl_opengl3.cpp \
+-Iinclude \
+-Ithird_party/imgui \
+-Ithird_party/imgui/backends \
+-lglfw -ldl -lGL -lX11 -lXxf86vm -lXcursor -lXinerama \
+-g -o app
 
 
 

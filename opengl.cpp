@@ -6,6 +6,10 @@
 #include <glm/gtc/type_ptr.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 
+#include "imgui.h"
+#include "imgui_impl_glfw.h"
+#include "imgui_impl_opengl3.h"
+
 
 //depricated vertex shader
 ////vertex shader source code
@@ -231,6 +235,12 @@ int main()
 
     //main while loop
 
+    IMGUI_CHECKVERSION();
+    ImGui::CreateContext();
+    ImGuiIO& imio = ImGui::GetIO(); (void) imio;
+    ImGui_ImplGlfw_InitForOpenGL(window, true);
+    ImGui_ImplOpenGL3_Init("#version 330");
+
     while(!glfwWindowShouldClose(window))
     {
 
@@ -269,6 +279,19 @@ int main()
         //clear screen and change the color 
         glClearColor(1.0f, 0.6f, 0.6f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+        ImGui_ImplOpenGL3_NewFrame();
+        ImGui_ImplGlfw_NewFrame();
+        ImGui::NewFrame();
+
+        ImGui::Begin("Settings");
+        ImGui::Text("GUI");
+        ImGui::SliderFloat("Camera Speed", &cameraSpeed, 0.001f, 0.1f);
+        ImGui::SliderFloat("FOV", &fov, 30.0f, 120.0f);
+        ImGui::Text("Sphere Y Position: %.2f", firstsphere.spherePos.y);
+        ImGui::Text("FPS: %.1f", 1.0f / deltaTime);
+        ImGui::End();
+
         //Change between a wireframe fill and full fill helps
         //to see the 3d component without lighting
         bool wireframe = false;
@@ -318,12 +341,22 @@ int main()
         glDrawArrays(GL_TRIANGLES, 0, sphereVertexCount);
         //render here
         //make sure you swap the buffers!!!!
+
+        ImGui::Render();
+        ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+
         glfwSwapBuffers(window);
         glfwPollEvents();    
     }
+
+    ImGui_ImplOpenGL3_Shutdown();
+    ImGui_ImplGlfw_Shutdown();
+    ImGui::DestroyContext();
+
     //clean up vertex buffer and vertex array on gpu after all work is done
     glDeleteVertexArrays(1, &VAO);
     glDeleteBuffers(1, &VBO);
+    glDeleteProgram(shaderApp);
 
 
 
