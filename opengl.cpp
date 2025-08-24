@@ -16,30 +16,38 @@ void framebuffer_size_callback(GLFWwindow* window, int width, int height)
 {
     glViewport(0, 0, width, height);
 }
+float boundaryMaxx = 30.0f;
+float boundaryMinx = -30.0f;
+
+float boundaryMaxy = 30.0f;
+float boundaryMiny = 0.0f;
+
+float boundaryMaxz = 30.0f;
+float boundaryMinz = -30.0f;
 
 GLfloat floorV[] = {
     
-    -5.0f, 0.0f, -5.0f,
-     5.0f, 0.0f, -5.0f,
-     5.0f, 0.0f,  5.0f,
+    -30.0f, 0.0f, -30.0f,
+     30.0f, 0.0f, -30.0f,
+     30.0f, 0.0f,  30.0f,
 
-    -5.0f, 0.0f, -5.0f,
-     5.0f, 0.0f,  5.0f,
-    -5.0f, 0.0f,  5.0f
+    -30.0f, 0.0f, -30.0f,
+     30.0f, 0.0f,  30.0f,
+    -30.0f, 0.0f,  30.0f
 };
 
 
 //cameraPos camera front and camera up help us define the space we
 //will move around based on these cordingates we also
 //have camera up 
-glm::vec3 cameraPos = glm::vec3(0.0f, 0.0f, 3.0f);
+glm::vec3 cameraPos = glm::vec3(0.0f, 5.0f, 15.0f);
 glm::vec3 cameraFront = glm::vec3(0.0f, 0.0f, -1.0f);
 glm::vec3 cameraUp = glm::vec3(0.0f, 1.0f, 0.0f);
 //////////////////////////////////////////////////////////
 /////////////GLOBALCONSTANTS////////////////////////
 ////////////////////////////////
 //helps adjust rate at which camera moves
-float cameraSpeed = 0.01f;
+float cameraSpeed = 1.0f;
 
 //fov set to whatever the user wants 
 float fov          = 90.0f;
@@ -47,7 +55,8 @@ float screenWidth = 800;
 float screenHeight = 800;
 float aspectRatio  = (screenWidth / screenHeight);
 //acceleration constant for gravity
-float gravity = -9.8f;
+float gravity = -9.85;
+
 //this helps us get depth perception. nearplane is the closest we will render verticies and farplane
 //is the farthest
 float nearPlane    = 0.1f;
@@ -67,20 +76,20 @@ void getInput(GLFWwindow *window)
     if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
         //we travel in the z direction positively by multiplying cameraspeed by the direction of our camera and adding
         //it back to pos
-        cameraPos += cameraSpeed * cameraFront;
+        cameraPos += cameraSpeed * cameraFront * deltaTime;
     if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
-        cameraPos -= cameraSpeed * cameraFront;
+        cameraPos -= cameraSpeed * cameraFront * deltaTime;
     if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
     //here we take the cross product of camerafront and camera up, we then add it to camera pos and 
     //the normilization is to smooth it out. this gives us a vector perpendicular to camera front and up which is
     //to the left
-        cameraPos -= glm::normalize(glm::cross(cameraFront, cameraUp)) * cameraSpeed;
+        cameraPos -= glm::normalize(glm::cross(cameraFront, cameraUp)) * cameraSpeed * deltaTime;
     if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
-        cameraPos += glm::normalize(glm::cross(cameraFront, cameraUp)) * cameraSpeed;
+        cameraPos += glm::normalize(glm::cross(cameraFront, cameraUp)) * cameraSpeed* deltaTime;
     if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS)
-        cameraPos += cameraUp * cameraSpeed;
+        cameraPos += cameraUp * cameraSpeed * deltaTime;
     if (glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS)
-        cameraPos -= cameraUp * cameraSpeed;
+        cameraPos -= cameraUp * cameraSpeed * deltaTime;
 }
 
 
@@ -115,9 +124,9 @@ int main()
     glfwMakeContextCurrent(window);
 
     //verticies of our Sphere in 3d space normalized cords
-    OBJdata data = parseOBJ();
+    
 
-    std::vector<GLfloat> verticies = data.finalVerticies;
+    std::vector<GLfloat> verticies = parseOBJ();
     std::vector<GLfloat> combinedVerticies = verticies;
     combinedVerticies.insert(combinedVerticies.end(), std::begin(floorV), std::end(floorV));
     int sphereVertexCount = verticies.size() / 3;
@@ -190,6 +199,8 @@ int main()
         float currentFrame = glfwGetTime();
         deltaTime = currentFrame - lastFrame;
         lastFrame = currentFrame;
+        float physicsAccumulator;
+        physicsAccumulator += deltaTime;
         // FPS counter
     static float timer = 0.0f;
     static int frames = 0;
@@ -205,16 +216,7 @@ int main()
         timer = 0.0f;
     }   
 
-        //apply gravity
-        firstsphere.sphereVelocity.y += gravity * deltaTime;
-        firstsphere.spherePos += firstsphere.sphereVelocity * deltaTime;
-        
-        //floor collision
-        if (firstsphere.spherePos.y < 1.0f) {
-            firstsphere.spherePos.y = 1.0f;
-            firstsphere.sphereVelocity.y = -firstsphere.sphereVelocity.y;
-    
-        }
+
 
         //clear screen and change the color 
         glClearColor(1.0f, 0.6f, 0.6f, 1.0f);
@@ -226,10 +228,11 @@ int main()
 
         ImGui::Begin("Settings");
         ImGui::Text("GUI");
-        ImGui::SliderFloat("Camera Speed", &cameraSpeed, 0.001f, 0.1f);
-        ImGui::SliderFloat("Gravity", &gravity, 0.0f, -15.0f);
+        ImGui::SliderFloat("Camera Speed", &cameraSpeed, 1.0f, 100.0f);
+        ImGui::SliderFloat("Gravity", &gravity, 0.0f, -30.0f);
         ImGui::SliderFloat("FOV", &fov, 30.0f, 120.0f);
-        ImGui::Text("Sphere Y Position: %.2f", firstsphere.spherePos.y);
+        ImGui::Text("Sphere Count: %zu", spheres.size());
+        ImGui::Text("Sphere Y Position: %.2f", spheres[0].spherePos.y);
         ImGui::Text("FPS: %.1f", 1.0f / deltaTime);
         ImGui::End();
 
@@ -253,7 +256,7 @@ int main()
         //projection uses fov in radians along with aspect ratio and our plane
         //cutoffs to help us define the 3d space we are in. it makes sure we have depth perspective.
         //this was before gravity//glm::mat4 model =       glm::mat4(1.0f); 
-        glm::mat4 model =       glm::translate(glm::mat4(1.0f), firstsphere.spherePos);
+        //glm::mat4 model =       glm::translate(glm::mat4(1.0f), firstsphere.spherePos);
         glm::mat4 view =        glm::lookAt(cameraPos, cameraPos + cameraFront, cameraUp);
         glm::mat4 projection =  glm::perspective(glm::radians(fov), aspectRatio, nearPlane, farPlane);
 
@@ -276,13 +279,55 @@ int main()
         glUniform4f(glGetUniformLocation(shaderApp, "inputColor"), 0.5f, 0.5f, 0.4f, 1.0f);
         glDrawArrays(GL_TRIANGLES, sphereVertexCount, floorVertexCount);
 
-        glUniformMatrix4fv(glGetUniformLocation(shaderApp, "model"), 1, GL_FALSE, glm::value_ptr(model));
+        //glUniformMatrix4fv(glGetUniformLocation(shaderApp, "model"), 1, GL_FALSE, glm::value_ptr(model));
         //sending input color to fragment shader to change color for sphere
-        glUniform4f(glGetUniformLocation(shaderApp, "inputColor"), 0.1f, 0.9f, 0.1f, 1.0f);
-        glDrawArrays(GL_TRIANGLES, 0, sphereVertexCount);
+        //glUniform4f(glGetUniformLocation(shaderApp, "inputColor"), 0.1f, 0.9f, 0.1f, 1.0f);
+        //glDrawArrays(GL_TRIANGLES, 0, sphereVertexCount);
         //render here
         //make sure you swap the buffers!!!!
+        if (glfwGetKey(window, GLFW_KEY_B) == GLFW_PRESS) {
 
+                Sphere s;
+                s.spherePos = glm::vec3(
+                    (rand() % 100 - 50) / 10.0f,
+                    (rand() % 100) / 5.0f,
+                    (rand() % 100 - 50) / 10.0f);
+                spheres.push_back(s);
+
+        }
+        RenderSpheres(shaderApp, spheres, sphereVertexCount);
+
+        const float fixedDeltaTime = 0.016f;
+
+        while(physicsAccumulator >= fixedDeltaTime){
+        for(Sphere& sphere : spheres){
+            sphere.putForce(glm::vec3(0.0f, gravity, 0.0f), 0.1f);
+        }
+
+        for(Sphere& sphere : spheres){
+            sphere.updatePhysics(fixedDeltaTime);
+        }
+        for (size_t i = 0; i < spheres.size(); ++i) {
+            for (size_t j = i + 1; j < spheres.size(); ++j) {
+            spheres[i].checkCollision(spheres[j]);
+            }
+        }
+        for(Sphere& sphere : spheres){
+            sphere.floorCollision(0.0f);
+        }
+        for(Sphere& sphere : spheres){
+            sphere.boundaryCollision(boundaryMinx, boundaryMaxx, boundaryMiny, boundaryMaxy, boundaryMinz, boundaryMaxz);
+        }
+        physicsAccumulator -= fixedDeltaTime;
+    }
+
+//        for (Sphere& sphere : spheres) {
+//            glm::mat4 model = glm::translate(glm::mat4(1.0f), sphere.spherePos);
+//            glUniformMatrix4fv(glGetUniformLocation(shaderApp, "model"), 1, GL_FALSE, glm::value_ptr(model));
+//        
+//            glUniform4f(glGetUniformLocation(shaderApp, "inputColor"), 0.1f, 0.9f, 0.1f, 1.0f); // Optional: vary per-sphere
+//            glDrawArrays(GL_TRIANGLES, 0, sphereVertexCount);
+//        }
         ImGui::Render();
         ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 
