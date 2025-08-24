@@ -88,7 +88,7 @@ float screenWidth = 800;
 float screenHeight = 800;
 float aspectRatio  = (screenWidth / screenHeight);
 //acceleration constant for gravity
-const float gravity = -9.8f;
+float gravity = -9.8f;
 //this helps us get depth perception. nearplane is the closest we will render verticies and farplane
 //is the farthest
 float nearPlane    = 0.1f;
@@ -287,6 +287,7 @@ int main()
         ImGui::Begin("Settings");
         ImGui::Text("GUI");
         ImGui::SliderFloat("Camera Speed", &cameraSpeed, 0.001f, 0.1f);
+        ImGui::SliderFloat("Grav", &gravity, 0.0f, -15.0f);
         ImGui::SliderFloat("FOV", &fov, 30.0f, 120.0f);
         ImGui::Text("Sphere Y Position: %.2f", firstsphere.spherePos.y);
         ImGui::Text("FPS: %.1f", 1.0f / deltaTime);
