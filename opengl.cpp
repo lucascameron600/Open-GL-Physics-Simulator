@@ -5,53 +5,10 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/type_ptr.hpp>
 #include <glm/gtc/matrix_transform.hpp>
-
+#include "shader.h"
 #include "imgui.h"
 #include "imgui_impl_glfw.h"
 #include "imgui_impl_opengl3.h"
-
-
-//depricated vertex shader
-////vertex shader source code
-//const char* vShaderSource = "#version 330 core\n"
-//"layout (location = 0) in vec4 aPos;\n"
-//"void main()\n"
-//"{\n"
-//"   gl_Position = vec4(aPos.x, aPos.y, aPos.z, 1.0);\n"
-
-//////////////////////////////////////////////////////////////////
-//inside this shader, i have added model view and projection matrixes
-//in order to accept the data we will send to the gpu
-//we then perform matrix multiplication on them to perform the nessacary
-//transformations
-
-const char* vShaderSource = R"glsl(
-#version 330 core
-layout (location = 0) in vec3 aPos;
-    
-uniform mat4 model;
-uniform mat4 view;
-uniform mat4 projection;
-    
-void main()
-{
-gl_Position = projection * view * model * vec4(aPos, 1.0);
-}
-)glsl";
-
-
-//Fragment Shader source code
-const char* fShaderSource = R"glsl(
-#version 330 core
-out vec4 FragColor;
-    
-uniform vec4 inputColor;
-    
-void main()
-{
-    FragColor = inputColor;
-}
-)glsl";
 
 
 //helps us with resizing glfwfamecallback
@@ -70,6 +27,8 @@ GLfloat floorV[] = {
      5.0f, 0.0f,  5.0f,
     -5.0f, 0.0f,  5.0f
 };
+
+
 //cameraPos camera front and camera up help us define the space we
 //will move around based on these cordingates we also
 //have camera up 
@@ -177,29 +136,8 @@ int main()
     glViewport(0, 0, screenWidth, screenHeight);
     glEnable(GL_DEPTH_TEST);
 /////////////////////////////////////////////////////////////
-///////////////SHADERS SPHERE//////////////////////////
-    //unisgned integer shader object v shader is the name
-    GLuint vShader = glCreateShader(GL_VERTEX_SHADER);
-    //we must attach the shader 1 means number of strings in the array
-    //vshdadersource points to the source code definded above
-    //Null means the source string is null at the end ???
-    glShaderSource(vShader, 1 , &vShaderSource, NULL);
-    //compile shader
-    glCompileShader(vShader);
-    //exact same steps from above but here
-    GLuint fShader = glCreateShader(GL_FRAGMENT_SHADER);
-    glShaderSource(fShader, 1 , &fShaderSource, NULL);
-    glCompileShader(fShader);
-    //generating a shader program to link everything
-    GLuint shaderApp = glCreateProgram();
-    //attaching vshader and fshader to the app
-    glAttachShader(shaderApp, vShader);
-    glAttachShader(shaderApp, fShader);
-    //linking the program????
-    glLinkProgram(shaderApp);
-    //deleting shaders after we are done with them because they are already linked to the program
-    glDeleteShader(vShader);
-    glDeleteShader(fShader);
+///////////////SHADERS//////////////////////////
+    GLuint shaderApp = compileShaderProg();
     //need to create a vertex buffer to store all of these things
     //before we send them to the GPU
 
@@ -218,6 +156,8 @@ int main()
     //glBufferData(GL_ARRAY_BUFFER, sizeof(verticies), verticies, GL_STATIC_DRAW);
 
     //STOP GO NO FURTHER FIGURE THIS OUT
+    //giving buffer data the combined verticies becuase we are drawring all of
+    //them in one VBO
     glBufferData(GL_ARRAY_BUFFER, combinedVerticies.size()*sizeof(GLfloat),combinedVerticies.data(), GL_STATIC_DRAW);
     //single traingle buffer data
     //glBufferData(GL_ARRAY_BUFFER, sizeof(triangleVertices), triangleVertices, GL_STATIC_DRAW);
