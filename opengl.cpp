@@ -104,7 +104,7 @@ int main()
 
 
     
-    GLFWwindow* window = glfwCreateWindow(screenWidth, screenHeight, "LearnOpenGL", NULL, NULL);
+    GLFWwindow* window = glfwCreateWindow(screenWidth, screenHeight, "Spheres!", NULL, NULL);
     if (window == NULL)
     {
         std::cout << "Failed to create GLFW window" << std::endl;
@@ -273,12 +273,12 @@ int main()
         glm::mat4 floormodel = glm::mat4(1.0f);
         glUniformMatrix4fv(glGetUniformLocation(shaderApp, "model"), 1, GL_FALSE, glm::value_ptr(floormodel));
         //setting color for frament shader to color floor
-        glUniform4f(glGetUniformLocation(shaderApp, "inputColor"), 0.5f, 0.5f, 0.5f, 1.0f);
+        glUniform4f(glGetUniformLocation(shaderApp, "inputColor"), 0.5f, 0.5f, 0.4f, 1.0f);
         glDrawArrays(GL_TRIANGLES, sphereVertexCount, floorVertexCount);
 
         glUniformMatrix4fv(glGetUniformLocation(shaderApp, "model"), 1, GL_FALSE, glm::value_ptr(model));
         //sending input color to fragment shader to change color for sphere
-        glUniform4f(glGetUniformLocation(shaderApp, "inputColor"), 0.0f, 0.2f, 1.0f, 1.0f);
+        glUniform4f(glGetUniformLocation(shaderApp, "inputColor"), 0.1f, 0.9f, 0.1f, 1.0f);
         glDrawArrays(GL_TRIANGLES, 0, sphereVertexCount);
         //render here
         //make sure you swap the buffers!!!!
