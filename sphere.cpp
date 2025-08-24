@@ -52,3 +52,15 @@ OBJdata parseOBJ() {
     result.finalVerticies = finalVerticies;
     return result;
 }
+
+std::vector<Sphere> genSpheres(){
+    std::vector<Sphere> spheres;
+
+    for (int i = 0; i < 5; ++i) {
+        Sphere sphere;
+        sphere.spherePos = glm::vec3(i * 2.0f, 5.0f, 0.0f); // Spread along X, height = 5
+        sphere.sphereVelocity = glm::vec3(0.0f);            // Start with zero velocity
+        spheres.push_back(sphere);
+    }
+    return spheres;
+}

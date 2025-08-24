@@ -19,6 +19,8 @@ struct Sphere
 
 };
 
+std::vector<Sphere> genSpheres();
+
 struct OBJdata {
       std::vector<GLfloat> verticies;
       std::vector<GLfloat> finalVerticies;

@@ -86,7 +86,7 @@ void getInput(GLFWwindow *window)
 
 int main()
 {
-    std::vector<Sphere> spheres;
+    std::vector<Sphere> spheres = genSpheres();
 
     Sphere firstsphere;
 
