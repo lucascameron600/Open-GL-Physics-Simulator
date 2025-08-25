@@ -194,7 +194,7 @@ int main()
     ImGuiIO& imio = ImGui::GetIO(); (void) imio;
     ImGui_ImplGlfw_InitForOpenGL(window, true);
     ImGui_ImplOpenGL3_Init("#version 330");
-
+    float physicsAccumulator = 0.0f;
     while(!glfwWindowShouldClose(window))
     {
 
@@ -204,14 +204,15 @@ int main()
         float currentFrame = glfwGetTime();
         deltaTime = currentFrame - lastFrame;
         lastFrame = currentFrame;
-        float physicsAccumulator;
+        //add to physics accumulator every frame, this helps us only move at a fixed delta time//
+        
         physicsAccumulator += deltaTime;
         // FPS counter
-    static float timer = 0.0f;
-    static int frames = 0;
+        static float timer = 0.0f;
+        static int frames = 0;
 
-    frames++;
-    timer += deltaTime;
+        frames++;
+        timer += deltaTime;
 
 
 
