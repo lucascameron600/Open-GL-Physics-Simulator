@@ -79,12 +79,12 @@ GLuint Render::compileShaderProg(){
 Render::Render(): VAO(0), VBO(0), shaderApp(0), sphereVertexCount(0), floorVertexCount(0){}
 
 Render::~Render(){
-    if (VAO != 0)
-        glDeleteVertexArrays(1, &VAO);
-    if (VBO != 0)
-        glDeleteBuffers(1, &VBO);
-    if (shaderApp != 0)
-        glDeleteProgram(shaderApp);
+    //if (VAO != 0)
+    //    glDeleteVertexArrays(1, &VAO);
+    //if (VBO != 0)
+    //    glDeleteBuffers(1, &VBO);
+    //if (shaderApp != 0)
+    //    glDeleteProgram(shaderApp);
 }
 void Render::setSphereVertexCount(int count){
     sphereVertexCount = count;

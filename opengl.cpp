@@ -55,8 +55,8 @@ float cameraSpeed = 10.0f;
 
 //fov set to whatever the user wants 
 float fov          = 90.0f;
-float screenWidth = 1920;
-float screenHeight = 1080;
+float screenWidth = 800;
+float screenHeight = 800;
 float aspectRatio  = (screenWidth/screenHeight);
 //acceleration constant for gravity
 float gravity = -9.85;
