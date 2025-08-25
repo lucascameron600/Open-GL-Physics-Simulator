@@ -347,16 +347,13 @@ int main()
         glfwSwapBuffers(window);
         glfwPollEvents();    
     }
-
+    
     ImGui_ImplOpenGL3_Shutdown();
     ImGui_ImplGlfw_Shutdown();
     ImGui::DestroyContext();
 
     ////clean up vertex buffer and vertex array on gpu after all work is done
-    //glDeleteVertexArrays(1, &VAO);
-    //glDeleteBuffers(1, &VBO);
-    //glDeleteProgram(shaderApp);
-
+    Render.cleanUp(); 
 
 
 

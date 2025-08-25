@@ -148,3 +148,13 @@ void Render::renderSpheres(std::vector<Sphere>& spheres){
     }
     glBindVertexArray(0);
 }
+
+void Render::cleanUp(){
+
+    if (VAO != 0)
+        glDeleteVertexArrays(1, &VAO);
+    if (VBO != 0)
+        glDeleteBuffers(1, &VBO);
+    if (shaderApp != 0)
+        glDeleteProgram(shaderApp);
+}

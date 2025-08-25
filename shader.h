@@ -20,7 +20,7 @@ class Render{
     GLuint getShaderApp();
     void setSphereVertexCount(int count);
     void setFloorVertexCount(int count);
-    
+    void cleanUp();    
 
     private:
         GLuint VAO, VBO;
