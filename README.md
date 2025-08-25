@@ -52,10 +52,6 @@ Clone directory and inside use the command Make if you already have CMake instal
 
 ### Executing program
 
-```
-code blocks for commands
-
-
 ## Authors
 
 Lucas Cameron
@@ -71,6 +67,11 @@ https://www.youtube.com/watch?v=9IULfQH7E90&t=545s
 https://github.com/johnBuffer/VerletSFML-Multithread
 https://www.youtube.com/watch?v=8-B6ryuBkCM
 https://github.com/kavan010/black_hole
+
+```
+code blocks for commands
+
+
 
 ![gif](https://github.com/user-attachments/assets/f1c2c377-bd6c-4937-b32c-8994856aee0c)
 <img width="807" height="832" alt="image" src="https://github.com/user-attachments/assets/c2d606ba-1810-4070-80ef-1370cdacfcd6" />
