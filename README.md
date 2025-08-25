@@ -1,4 +1,89 @@
+# OpenGl Physics Simulation
 
+This physics simulation is written in C++ using GLFW for the window and OpenGL to render multiple particles/spheres to the screen. ImGui is also used for adjusting values and providing a minimal ui
+
+## Description
+
+An in-depth paragraph about your project and overview of use.
+
+## Project Write up
+This small C++ and OpenGL forced me to learn a ton of new information reguarding OpenGL, Linear Algebra and the entire 3D Graphics Pipeline. I also had to learn about classical physics and how that is typically simulated in a c++ project.
+I will try to summarize what I learned here. The GPU at its simplest form can only render triangles. Therefore any other shape you see in game is typically an abstraction of the traingle or quad. When I started my OpenGL journey
+in my last project I focused soley on learning about the OpenGL GRAPHICS PIPELINE, this pipeline consists of 6 steps starting with the VERTEX SHADER. The vertex shaders sole job depending on how you write it is to take data in the form of 
+3d vertices in coordinate space and map them to a specific point on your screen. After interpolating lines between the vertices and fill space it continues to the fragment shader.The fragment shaders specific job is to figure out what color each pixel is going to be. The fragment shaders job also includes lighting in most cases. After learning about the different elements of the graphics pipeline I could begin using Vertex Buffers and arrays to send off these verticies to the gpu to be rendered and I would get a simple triangle. As I said before everything is an abstraction of the triangle, but I wanted a sphere. Most people proceduraly generate vertex points for their spheres using clever math but I decided to use a blender exported OBJ model of an ico-sphere instead. I was hoping this would reduce the amount of computational load. After I loaded all of the vertices from each individual triangle using a parser into the vertex buffer and binded the vertex buffer to the vertex array, I could again render each triangle on the sphere. I also needed to make sure I ordered the vertex's because of the way that the GPU keeps track of rendering the triangles. At this point I had a working unit sphere and it really was beautiful, that being said I stil couldnt move in 3D space and the sphere definetly could not move. I decided my next challenge to tackle would be the view and how that is handled in 3D space. This lead me to learning about matrix transformations, and the MVP piepline(Model, View, Projection). The MVP pipeline is a set of matrix transformations that is used to convert what is modeled in 3D space in to a set of 2D screen cordinates that are usable by your computer. The three parts of the MVP pipeline are detailed as follows. The Model Matrix takes the unit sphere in its local cordinates and transforms it to real world cordinates that can be used, we already had a model matrix in our original traingle because we need that even for a 2D representation. The View Matrix takes the world cordinates and transforms them to camera cordinates, almost like moving the whole world. We built this matrix using the camera postion, the front of the camera, and the upward direction of the camera, done using glm::lookAt. The last element is the Projection matrix, there is typically two types of projection used in 3D games orthographic and perspective, I used perspective projection. This transformation incorporates realistic 3d depth and aspect ratio. This was done using glm::perspective. After adding these transformations to your loop we must also update the vertex shader to accept these new matrixes so the gpu can perform them. Once I was done doing this and performing some light refactoring and input taking, I(and the spheres) could finally move around in 3D space. In order to get more spheres I had to further encapsulate code. After doing that I quickly rendered a floor with 2 more triangles.
+
+Now that I was confident I could draw one sphere I decided to tackle the task of having multiple spheres, and even having gravity and collisions between multiple spheres. This required me to learn more about how physics is typically simulated in c++ typically people use Euler or Verlet integration to update object motion over time.
+
+Euler takes a very straightforward approach where velocity and position are updated based on acceleration but supposedly this is an unstable way to simulate particles that are interacting often. That being said the reason I chose not to use it is more simple. Everyone that I had seen make one of these simulations had used Verlet integration so thats ultimately why I decided to use Verlet. Verlet integration only uses the previous and current frames acceleration and position. Instead of tracking velocity we can just calculate it temporarily when we need it.
+I learned to structure my simulation so that forces like gravity could be applied as acceleration before each physics update, and then reset afterward. For collisions, I checked the distance between pairs of spheres and resolved overlaps by adjusting their positions.
+
+Final Thoughts
+
+This project not only deepened my understanding of OpenGL and the GPU pipeline but also gave me a practical lesson in linear algebra, classical physics, and real-time simulation.
+
+It taught me how to structure a C++ application that interacts really close with the GPU. It also taught me about the structure of the GPU and exactly what it does and how. I think using a game engine to abstract all of these concepts away from me would have really taken away the joy of getting simple physical interactions to occur and I now have a deeper understanding of the foundataional concepts of graphics rendering.
+
+### Dependencies
+
+* Describe any prerequisites, libraries, OS version, etc., needed before installing program.
+* Linux
+* CMake
+* ImGui
+* OpenGl
+* GLFW
+* GLM
+* GLSL
+* GLAD
+* KHR
+
+### Installing
+
+* How/where to download your program
+* Any modifications needed to be made to files/folders
+
+### Executing program
+
+* How to run the program
+* Step-by-step bullets
+```
+code blocks for commands
+```
+
+## Help
+
+Any advise for common problems or issues.
+```
+command to run if program contains helper info
+```
+
+## Authors
+
+Contributors names and contact info
+
+ex. Dominique Pizzie  
+ex. [@DomPizzie](https://twitter.com/dompizzie)
+
+## Version History
+
+* 0.2
+    * Various bug fixes and optimizations
+    * See [commit change]() or See [release history]()
+* 0.1
+    * Initial Release
+
+## License
+
+This project is licensed under the [NAME HERE] License - see the LICENSE.md file for details
+
+## Acknowledgments
+
+Inspiration, code snippets, etc.
+https://pikuma.com/blog/verlet-integration-2d-cloth-physics-simulation
+https://www.youtube.com/watch?v=lS_qeBy3aQI
+https://www.youtube.com/watch?v=9IULfQH7E90&t=545s
+https://github.com/johnBuffer/VerletSFML-Multithread
+https://www.youtube.com/watch?v=8-B6ryuBkCM
+https://github.com/kavan010/black_hole
 
 ![gif](https://github.com/user-attachments/assets/f1c2c377-bd6c-4937-b32c-8994856aee0c)
 <img width="807" height="832" alt="image" src="https://github.com/user-attachments/assets/c2d606ba-1810-4070-80ef-1370cdacfcd6" />
