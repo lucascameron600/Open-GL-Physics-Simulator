@@ -25,9 +25,6 @@ struct Sphere
 };
 
 
-
-//std::vector<Sphere> genSpheres(int numSpheres);
-//void addSpheres(std::vector<Sphere>& spheres, int count);
 void renderSpheres(GLuint shaderProgram, std::vector<Sphere>& spheres, int vertexCount);
 std::vector<GLfloat> parseOBJ();
 

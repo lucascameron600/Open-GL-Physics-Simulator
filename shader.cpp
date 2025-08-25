@@ -1,6 +1,10 @@
-#include <iostream>
-#include <glad/gl.h>
 #include "shader.h"
+#include "sphere.h"
+#include <vector>
+#include <glad/gl.h>
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtc/type_ptr.hpp>
 
 //depricated vertex shader
 ////vertex shader source code
@@ -45,7 +49,7 @@ const char* vShaderSource = R"glsl(
     )glsl";
     
 
-GLuint compileShaderProg(){
+GLuint Render::compileShaderProg(){
     //unisgned integer shader object v shader is the name
     GLuint vShader = glCreateShader(GL_VERTEX_SHADER);
     //we must attach the shader 1 means number of strings in the array
@@ -70,4 +74,77 @@ GLuint compileShaderProg(){
     glDeleteShader(fShader);
 
     return shaderApp;
+}
+
+Render::Render(): VAO(0), VBO(0), shaderApp(0), sphereVertexCount(0), floorVertexCount(0){}
+
+Render::~Render(){
+    if (VAO != 0)
+        glDeleteVertexArrays(1, &VAO);
+    if (VBO != 0)
+        glDeleteBuffers(1, &VBO);
+    if (shaderApp != 0)
+        glDeleteProgram(shaderApp);
+}
+void Render::setSphereVertexCount(int count){
+    sphereVertexCount = count;
+}
+void Render::setFloorVertexCount(int count){
+    floorVertexCount = count;
+}
+
+void Render::init(std::vector<GLfloat>& sphereVerticies, GLfloat* floorV, int floorV_size, int sphereVerticies_size){
+    shaderApp = compileShaderProg(); 
+
+
+    // Combine both into one buffer
+    floorVertexCount = floorV_size;
+    sphereVertexCount = sphereVerticies_size;
+
+
+    std::vector<GLfloat> combinedVerticies = sphereVerticies;
+    combinedVerticies.insert(combinedVerticies.end(), floorV, floorV + floorV_size);
+
+    // Create VAO and VBO
+    glGenVertexArrays(1, &VAO);
+    glGenBuffers(1, &VBO);
+
+    glBindVertexArray(VAO);
+    glBindBuffer(GL_ARRAY_BUFFER, VBO);
+    glBufferData(GL_ARRAY_BUFFER, combinedVerticies.size() * sizeof(GLfloat), combinedVerticies.data(), GL_STATIC_DRAW);
+
+    // Position attribute (layout location 0)
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
+    glEnableVertexAttribArray(0);
+
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
+    glBindVertexArray(0);
+}  
+
+
+GLuint Render::getShaderApp() {
+    return shaderApp;
+}
+
+void Render::renderFloor(){
+    glUseProgram(shaderApp);
+    glm::mat4 model = glm::mat4(1.0f);
+    glUniformMatrix4fv(glGetUniformLocation(shaderApp, "model"), 1, GL_FALSE, glm::value_ptr(model));
+    glUniform4f(glGetUniformLocation(shaderApp, "inputColor"), 0.5f, 0.5f, 0.4f, 1.0f);
+
+    glBindVertexArray(VAO);
+    glDrawArrays(GL_TRIANGLES, sphereVertexCount/3, floorVertexCount/3);
+    glBindVertexArray(0);
+}
+void Render::renderSpheres(std::vector<Sphere>& spheres){
+    glUseProgram(shaderApp);
+    glBindVertexArray(VAO);
+
+    for (Sphere& s : spheres) {
+        glm::mat4 model = glm::translate(glm::mat4(1.0f), s.spherePos);
+        glUniformMatrix4fv(glGetUniformLocation(shaderApp, "model"), 1, GL_FALSE, glm::value_ptr(model));
+        glUniform4f(glGetUniformLocation(shaderApp, "inputColor"), 0.1f, 0.9f, 0.1f, 1.0f);
+        glDrawArrays(GL_TRIANGLES, 0, sphereVertexCount/3);
+    }
+    glBindVertexArray(0);
 }
