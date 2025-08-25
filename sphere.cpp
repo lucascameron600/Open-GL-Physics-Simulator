@@ -52,35 +52,35 @@ std::vector<GLfloat> parseOBJ() {
     return finalVerticies;
 }
 //generates all the spheres that we will use in our simulation
-std::vector<Sphere> genSpheres(int numSpheres){
-    std::vector<Sphere> spheres;
-        int num = numSpheres;
-        for (int i = 0; i < num; ++i) {
-            //create sphere
-            Sphere sphere;
-            //sets original position of sphere right away
-            sphere.spherePos = glm::vec3(i * 2.0f, 5.0f, 0.0f); 
-            //initialize previous pos do not forget this line trust me
-            sphere.prevPos = sphere.spherePos - glm::vec3(0.0f, 0.01f, 0.0f);
-            // reset velocity to zero before pushing          
-            spheres.push_back(sphere);
-            }
-
-        return spheres;
-    }
+//std::vector<Sphere> genSpheres(int numSpheres){
+//    std::vector<Sphere> spheres;
+//        int num = numSpheres;
+//        for (int i = 0; i < num; ++i) {
+//            //create sphere
+//            Sphere sphere;
+//            //sets original position of sphere right away
+//            sphere.spherePos = glm::vec3(i * 2.0f, 5.0f, 0.0f); 
+//            //initialize previous pos do not forget this line trust me
+//            sphere.prevPos = sphere.spherePos - glm::vec3(0.0f, 0.01f, 0.0f);
+//            // reset velocity to zero before pushing          
+//            spheres.push_back(sphere);
+//            }
+//
+//        return spheres;
+//    }
 //add spheres to the simulation
-void addSpheres(std::vector<Sphere>& spheres, int count) {
-        for (int i = 0; i < count; ++i) {
-            Sphere sphere;
-            sphere.spherePos = glm::vec3(rand() % 31, 5.0f, rand() % 31);
-            sphere.prevPos = sphere.spherePos - glm::vec3(0.0f, 0.01f, 0.0f);
-            spheres.push_back(sphere);
-        }
-    }
-
-
-
-// this 
+//void addSpheres(std::vector<Sphere>& spheres, int count) {
+//        for (int i = 0; i < count; ++i) {
+//            Sphere sphere;
+//            sphere.spherePos = glm::vec3(rand() % 31, 5.0f, rand() % 31);
+//            sphere.prevPos = sphere.spherePos - glm::vec3(0.0f, 0.01f, 0.0f);
+//            spheres.push_back(sphere);
+//        }
+//    }
+//
+//
+//
+//// this 
 void renderSpheres(GLuint shaderProgram, std::vector<Sphere>& spheres, int vertexCount) {
     for (Sphere& sphere : spheres) {
         //matrix transformation by multiplying shere pos with identity matrix sets that to model we will send to shader

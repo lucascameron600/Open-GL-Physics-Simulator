@@ -100,7 +100,7 @@ int main()
     Engine Engine;
     int firstSpheres = 5;
     int addBalls = 1;
-    std::vector<Sphere> spheres = genSpheres(firstSpheres);
+    std::vector<Sphere> spheres = Engine.genSpheres(firstSpheres);
 
     Sphere firstsphere;
 
@@ -208,6 +208,7 @@ int main()
         //add to physics accumulator every frame, this helps us only move at a fixed delta time//
 
         physicsAccumulator += deltaTime;
+
         // FPS counter
         static float timer = 0.0f;
         static int frames = 0;
@@ -252,15 +253,13 @@ int main()
 
         //matrix projections using the MVP translation pipeline, the model will put our
         //sphere from its own cordinates to a space that we will use, it starts at 0,0,0
-        //the view matrix will use look at to orient the camera to the correct view, still
-        // unsure how this works entirely.
+        //the view matrix will use look at to orient the camera to the correct view.
         //projection uses fov in radians along with aspect ratio and our plane
         //cutoffs to help us define the 3d space we are in. it makes sure we have depth perspective.
         //this was before gravity//glm::mat4 model =       glm::mat4(1.0f); 
         //glm::mat4 model =       glm::translate(glm::mat4(1.0f), firstsphere.spherePos);
         glm::mat4 view =        glm::lookAt(cameraPos, cameraPos + cameraFront, cameraUp);
         glm::mat4 projection =  glm::perspective(glm::radians(fov), aspectRatio, nearPlane, farPlane);
-
         //here we are sending the matricies to the GPU using a pointer to where they start
         //sglUniformMatrix4fv(glGetUniformLocation(shaderApp, "model"), 1, GL_FALSE, glm::value_ptr(model));
         glUniformMatrix4fv(glGetUniformLocation(shaderApp, "view"), 1, GL_FALSE, glm::value_ptr(view));
@@ -281,28 +280,16 @@ int main()
         glDrawArrays(GL_TRIANGLES, sphereVertexCount, floorVertexCount);
 
 
-        //glUniformMatrix4fv(glGetUniformLocation(shaderApp, "model"), 1, GL_FALSE, glm::value_ptr(model));
-        //sending input color to fragment shader to change color for sphere
-        //glUniform4f(glGetUniformLocation(shaderApp, "inputColor"), 0.1f, 0.9f, 0.1f, 1.0f);
-        //glDrawArrays(GL_TRIANGLES, 0, sphereVertexCount);
+
         //render here
         //make sure you swap the buffers!!!!
 
         renderSpheres(shaderApp, spheres, sphereVertexCount);
-        //if (glfwGetKey(window, GLFW_KEY_B) == GLFW_PRESS) {
-        //    Sphere s;
-        //    s.spherePos = glm::vec3(
-        //        (rand() % 31) ,
-        //        (5.0f),
-        //        (rand() % 31) );
-        //    spheres.push_back(s);
-    //
-        //}
 
 
     if (glfwGetKey(window, GLFW_KEY_B) == GLFW_PRESS) {
         if (!bKeyPressed) {
-            addSpheres(spheres, addBalls);
+            Engine.addSpheres(spheres, addBalls);
             bKeyPressed = true;
         }
     } else {

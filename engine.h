@@ -14,6 +14,7 @@ class Engine{
     void checkCollision(Sphere& sphere1, Sphere& sphere2);
     void floorCollision(Sphere& sphere, float floorY = 0.0f);
     void boundaryCollision(Sphere& sphere, float boundaryMinx, float boundaryMaxx, float boundaryMiny, float boundaryMaxy, float boundaryMinz, float boundaryMaxz);
-
+    void addSpheres(std::vector<Sphere>& spheres, int count);
+    std::vector<Sphere> genSpheres(int numSpheres);
 };
 #endif
