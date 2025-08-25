@@ -8,7 +8,7 @@ This physics simulation is written in C++ using GLFW for the window and OpenGL t
 Using Verlet integration as the base physics engine, this project uses c++ to simulate real time physics like gravity and collision between objects. This initially started as a way to learn OpenGl but I tied it into a video I remember watching from Pezza's Work where he built something similiar with SFML. That video is linked below in the references section. Aside from using verlet, as I said before I took this opportunity to learn about OpenGl and that was a significant barrier to entry for me until I started trying to do it. In its current state it is unoptimized so I plan on adding verlet substeps to increase performance soon
 
 
-## Project Write up
+# Project Write up
 This small C++ and OpenGL project helped me to learn a ton of new information about OpenGL, C++ and the entire 3D Graphics Pipeline. I also had to learn about classical physics and how that is typically simulated in a C++ project.
 I will try to summarize what I learned here. The GPU at its simplest form can only render triangles. Therefore any other shape you see in game is typically an abstraction of the traingle or quad. When I started my OpenGL journey
 ## Intro/Generating a Sphere
