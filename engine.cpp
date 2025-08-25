@@ -5,11 +5,10 @@
 #include "sphere.h"
 
     //default ctor
-    Engine::Engine(float gravity)
-        : gravity(gravity) {}
+    Engine::Engine() {}
 
     void Engine::updatePhysics(Sphere& sphere, float deltaTime){
-            //temporary vertex to store sphere pos
+        //temporary vertex to store sphere pos
         glm::vec3 temporary = sphere.spherePos;
         //main impplementation of verlet integration(predicting next step
         //based on motion)
@@ -45,10 +44,13 @@
     }
     void Engine::boundaryCollision(Sphere& sphere, float boundaryMinx, float boundaryMaxx, float boundaryMiny, float boundaryMaxy, float boundaryMinz, float boundaryMaxz){
         glm::vec3& pos = sphere.spherePos;
-        glm::vec3& vel = sphere.sphereVelocity;
+        glm::vec3 vel = sphere.spherePos - sphere.prevPos;
+        //glm::vec3& vel = sphere.sphereVelocity;
         //float sphere.radius = 1.0f; // Approximate radius of your sphere
     
-        
+        //similar to collision with the floor, we give this funciton every cordinate for our bounds
+        //and it checks every sphere to make sure it is within, if it is not it sets its velocity to be negative (opposite direction)
+        //very simple collision
         if (pos.x - sphere.radius < boundaryMinx) {
             pos.x = boundaryMinx + sphere.radius;
             vel.x *= -1.0f;

@@ -194,6 +194,7 @@ int main()
     ImGuiIO& imio = ImGui::GetIO(); (void) imio;
     ImGui_ImplGlfw_InitForOpenGL(window, true);
     ImGui_ImplOpenGL3_Init("#version 330");
+    //track delta time accumulation
     float physicsAccumulator = 0.0f;
     while(!glfwWindowShouldClose(window))
     {
@@ -205,7 +206,7 @@ int main()
         deltaTime = currentFrame - lastFrame;
         lastFrame = currentFrame;
         //add to physics accumulator every frame, this helps us only move at a fixed delta time//
-        
+
         physicsAccumulator += deltaTime;
         // FPS counter
         static float timer = 0.0f;
@@ -298,8 +299,6 @@ int main()
     //
         //}
 
-
-    // Inside your game loop:
 
     if (glfwGetKey(window, GLFW_KEY_B) == GLFW_PRESS) {
         if (!bKeyPressed) {
