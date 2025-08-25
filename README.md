@@ -1,16 +1,19 @@
 # OpenGl Physics Simulation
 
 This physics simulation is written in C++ using GLFW for the window and OpenGL to render multiple particles/spheres to the screen. ImGui is also used for adjusting values and providing a minimal ui
-
+![gif](https://github.com/user-attachments/assets/f1c2c377-bd6c-4937-b32c-8994856aee0c)
 ## Description
 
-An in-depth paragraph about your project and overview of use.
+Using Verlet integration as the base physics engine, this project uses c++ to simulate real time physics like gravity and collision between objects. This initially started as a way to learn OpenGl but I tied it into a video I remember watching from Pezza's Work where he built something similiar with SFML. That video is linked below in the references section. Aside from using verlet, as I said before I took this opportunity to learn about OpenGl and that was a significant barrier to entry for me until I started trying to do it. In its current state it is unoptimized so I plan on adding verlet substeps to increase performance soon
+
 
 ## Project Write up
-This small C++ and OpenGL forced me to learn a ton of new information reguarding OpenGL, Linear Algebra and the entire 3D Graphics Pipeline. I also had to learn about classical physics and how that is typically simulated in a c++ project.
+This small C++ and OpenGL project helped me to learn a ton of new information about OpenGL, C++ and the entire 3D Graphics Pipeline. I also had to learn about classical physics and how that is typically simulated in a C++ project.
 I will try to summarize what I learned here. The GPU at its simplest form can only render triangles. Therefore any other shape you see in game is typically an abstraction of the traingle or quad. When I started my OpenGL journey
 in my last project I focused soley on learning about the OpenGL GRAPHICS PIPELINE, this pipeline consists of 6 steps starting with the VERTEX SHADER. The vertex shaders sole job depending on how you write it is to take data in the form of 
 3d vertices in coordinate space and map them to a specific point on your screen. After interpolating lines between the vertices and fill space it continues to the fragment shader.The fragment shaders specific job is to figure out what color each pixel is going to be. The fragment shaders job also includes lighting in most cases. After learning about the different elements of the graphics pipeline I could begin using Vertex Buffers and arrays to send off these verticies to the gpu to be rendered and I would get a simple triangle. As I said before everything is an abstraction of the triangle, but I wanted a sphere. Most people proceduraly generate vertex points for their spheres using clever math but I decided to use a blender exported OBJ model of an ico-sphere instead. I was hoping this would reduce the amount of computational load. After I loaded all of the vertices from each individual triangle using a parser into the vertex buffer and binded the vertex buffer to the vertex array, I could again render each triangle on the sphere. I also needed to make sure I ordered the vertex's because of the way that the GPU keeps track of rendering the triangles. At this point I had a working unit sphere and it really was beautiful, that being said I stil couldnt move in 3D space and the sphere definetly could not move. I decided my next challenge to tackle would be the view and how that is handled in 3D space. This lead me to learning about matrix transformations, and the MVP piepline(Model, View, Projection). The MVP pipeline is a set of matrix transformations that is used to convert what is modeled in 3D space in to a set of 2D screen cordinates that are usable by your computer. The three parts of the MVP pipeline are detailed as follows. The Model Matrix takes the unit sphere in its local cordinates and transforms it to real world cordinates that can be used, we already had a model matrix in our original traingle because we need that even for a 2D representation. The View Matrix takes the world cordinates and transforms them to camera cordinates, almost like moving the whole world. We built this matrix using the camera postion, the front of the camera, and the upward direction of the camera, done using glm::lookAt. The last element is the Projection matrix, there is typically two types of projection used in 3D games orthographic and perspective, I used perspective projection. This transformation incorporates realistic 3d depth and aspect ratio. This was done using glm::perspective. After adding these transformations to your loop we must also update the vertex shader to accept these new matrixes so the gpu can perform them. Once I was done doing this and performing some light refactoring and input taking, I(and the spheres) could finally move around in 3D space. In order to get more spheres I had to further encapsulate code. After doing that I quickly rendered a floor with 2 more triangles.
+
+A big issue so far with this project has been how to encapsulate certain parts of the code. I try to look to other for examples but I am still working on making each separate part of the program have its own home so to speak. As I am writing this I finished encapsulating the physics engine in the engine class.
 
 Now that I was confident I could draw one sphere I decided to tackle the task of having multiple spheres, and even having gravity and collisions between multiple spheres. This required me to learn more about how physics is typically simulated in c++ typically people use Euler or Verlet integration to update object motion over time.
 
@@ -38,42 +41,19 @@ It taught me how to structure a C++ application that interacts really close with
 
 ### Installing
 
-* How/where to download your program
-* Any modifications needed to be made to files/folders
+
 
 ### Executing program
 
-* How to run the program
-* Step-by-step bullets
 ```
 code blocks for commands
-```
 
-## Help
-
-Any advise for common problems or issues.
-```
-command to run if program contains helper info
-```
 
 ## Authors
 
-Contributors names and contact info
+Lucas Cameron
 
-ex. Dominique Pizzie  
-ex. [@DomPizzie](https://twitter.com/dompizzie)
 
-## Version History
-
-* 0.2
-    * Various bug fixes and optimizations
-    * See [commit change]() or See [release history]()
-* 0.1
-    * Initial Release
-
-## License
-
-This project is licensed under the [NAME HERE] License - see the LICENSE.md file for details
 
 ## Acknowledgments
 
