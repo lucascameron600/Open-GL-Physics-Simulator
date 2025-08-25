@@ -42,9 +42,12 @@ It taught me how to structure a C++ application that interacts really close with
 * GLAD
 * KHR
 
-### Installing
-
-
+### Installing/Executing
+Install Linux
+Install GLFW
+Install GLM
+Clone directory and inside use the command Make if you already have CMake installed
+./app
 
 ### Executing program
 
