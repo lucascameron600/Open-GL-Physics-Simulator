@@ -1,6 +1,7 @@
 # OpenGl Physics Simulation
 
 This physics simulation is written in C++ using GLFW for the window and OpenGL to render multiple particles/spheres to the screen. ImGui is also used for adjusting values and providing a minimal ui
+
 ![gif](https://github.com/user-attachments/assets/f1c2c377-bd6c-4937-b32c-8994856aee0c)
 ## Description
 
