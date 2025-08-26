@@ -1,22 +1,20 @@
 #include <iostream>
 #include <glad/gl.h>
+#include <string>
 #include <GLFW/glfw3.h>
 #include "engine.h"
 #include "sphere.h"
 #include <glm/glm.hpp>
 #include <glm/gtc/type_ptr.hpp>
 #include <glm/gtc/matrix_transform.hpp>
-#include "shader.h"
+#include "render.h"
 #include "imgui.h"
 #include "imgui_impl_glfw.h"
 #include "imgui_impl_opengl3.h"
 
 
 //helps us with resizing glfwfamecallback
-void framebuffer_size_callback(GLFWwindow* window, int width, int height)
-{
-    glViewport(0, 0, width, height);
-}
+
 float boundaryMaxx = 50.0f;
 float boundaryMinx = -50.0f;
 
@@ -65,12 +63,16 @@ float gravity = -9.85;
 //is the farthest
 float nearPlane    = 0.1f;
 float farPlane     = 100.0f;
+
 //handle time
 float deltaTime = 0.0f;
 float lastFrame = 0.0f;
-//for generating spheres
-bool bKeyPressed = false;
+
 //handles excape key and wasd
+bool bKeyPressed = false;
+
+//track delta time accumulation
+float physicsAccumulator = 0.0f;
 void getInput(GLFWwindow *window)
 {
     if(glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
@@ -108,96 +110,15 @@ int main()
     Sphere firstsphere;
 
 
-
-    //initialize GLFW
-    glfwInit();
-    //version 3.3
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
-    //version 3.3
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
-    // CORE GLFW profile means we have mot recent functions only
-    glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-    //error handling for window
-
-
-    
-    GLFWwindow* window = glfwCreateWindow(screenWidth, screenHeight, "Spheres!", NULL, NULL);
-    glfwMakeContextCurrent(window);
-    glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
-    if (window == NULL)
-    {
-        std::cout << "Failed to create GLFW window" << std::endl;
-        glfwTerminate();
-        return -1;
-    }
-    //ensures that glfw associates the window we are using with the commands we give it
-
-
-    //verticies of our Sphere in 3d space normalized cords
-    
-
     std::vector<GLfloat> verticies = parseOBJ();
     std::vector<GLfloat> combinedVerticies = verticies;
     combinedVerticies.insert(combinedVerticies.end(), std::begin(floorV), std::end(floorV));
-    
 
-    //int sphereVertexCount = verticies.size() / 3;
-    //int floorVertexCount = sizeof(floorV) / sizeof(GLfloat) / 3;
-    
-    
-    
-    //Render.setSphereVertexCount(sphereVertexCount);
-    //Render.setFloorVertexCount(floorVertexCount);
+    GLFWwindow* window = Render.glfwSetup(screenWidth, screenHeight, "Spheres!");
 
-    //std::vector<GLfloat> finalVerticies = data.finalVerticies;
-
-    //Glad error handling
-    if (!gladLoadGL(glfwGetProcAddress))
-    {
-        std::cout << "Failed to initialize GLAD" << std::endl;
-        return -1;
-    }
-
-    glDisable(GL_CULL_FACE);
-    glViewport(0, 0, screenWidth, screenHeight);
-    glEnable(GL_DEPTH_TEST);
+    
     Render.init(verticies, floorV, sizeof(floorV)/sizeof(GLfloat), verticies.size());
-/////////////////////////////////////////////////////////////
-///////////////SHADERS//////////////////////////
-    //GLuint shaderApp = compileShaderProg();
-    ////need to create a vertex buffer to store all of these things
-    ////before we send them to the GPU
-//
-    ////Create a Vertex buffer from gluint
-    //GLuint VAO, VBO;
-    ////glm::mat4 projection = glm::ortho(.5f,.5f,,,);
-    //glGenVertexArrays(1, &VAO);
-    ////Gen the buffer and bind it to the adress of the vbo
-    //glGenBuffers(1, &VBO);
-    ////binding vertex array
-    //glBindVertexArray(VAO);
-    ////binding buffer
-    //glBindBuffer(GL_ARRAY_BUFFER, VBO);
-    ////actually creating the buffer and telling it how many verticies are in it.
-    //// GL_STATIC means that verticies are modified once and used many times
-    ////glBufferData(GL_ARRAY_BUFFER, sizeof(verticies), verticies, GL_STATIC_DRAW);
-//
-    ////STOP GO NO FURTHER FIGURE THIS OUT
-    ////giving buffer data the combined verticies becuase we are drawring all of
-    ////them in one VBO
-    //glBufferData(GL_ARRAY_BUFFER, combinedVerticies.size()*sizeof(GLfloat),combinedVerticies.data(), GL_STATIC_DRAW);
-    ////single traingle buffer data
-    ////glBufferData(GL_ARRAY_BUFFER, sizeof(triangleVertices), triangleVertices, GL_STATIC_DRAW);
-//
-    ////the VAO stores pointers to the different VBOS and allows you
-    //// to switch between different VBOS wihtout lag
-    //glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3*sizeof(float), (void*)0);
-    ////enables vertex attrib pointer
-    //glEnableVertexAttribArray(0);
-    ////these two lines unbind the buffer and vao to help protect out buffers and arrays
-    ////from being changed
-    //glBindBuffer(GL_ARRAY_BUFFER, 0);
-    //glBindVertexArray(0);
+
 
 
     //main while loop
@@ -207,8 +128,9 @@ int main()
     ImGuiIO& imio = ImGui::GetIO(); (void) imio;
     ImGui_ImplGlfw_InitForOpenGL(window, true);
     ImGui_ImplOpenGL3_Init("#version 330");
-    //track delta time accumulation
-    float physicsAccumulator = 0.0f;
+
+    
+
     while(!glfwWindowShouldClose(window))
     {
 

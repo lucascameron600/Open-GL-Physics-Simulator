@@ -1,6 +1,8 @@
-#include "shader.h"
+#include "render.h"
 #include "sphere.h"
 #include <vector>
+#include <iostream>
+#include <string>
 #include <glad/gl.h>
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
@@ -75,7 +77,10 @@ GLuint Render::compileShaderProg(){
 
     return shaderApp;
 }
-
+void framebuffer_size_callback(GLFWwindow* window, int width, int height)
+{
+    glViewport(0, 0, width, height);
+}
 Render::Render(): VAO(0), VBO(0), shaderApp(0), sphereVertexCount(0), floorVertexCount(0){}
 
 Render::~Render(){
@@ -86,11 +91,38 @@ Render::~Render(){
     //if (shaderApp != 0)
     //    glDeleteProgram(shaderApp);
 }
-void Render::setSphereVertexCount(int count){
-    sphereVertexCount = count;
-}
-void Render::setFloorVertexCount(int count){
-    floorVertexCount = count;
+GLFWwindow* Render::glfwSetup(int width, int height, const char* title){
+    glfwInit();
+    //version 3.3
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
+    //version 3.3
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
+    // CORE GLFW profile means we have mot recent functions only
+    glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+    //error handling for window
+
+    GLFWwindow* window = glfwCreateWindow(width, height, title, NULL, NULL);
+    glfwMakeContextCurrent(window);
+    glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
+    
+    if (window == NULL)
+    {
+        std::cout << "Failed to create GLFW window" << std::endl;
+        glfwTerminate();
+        return nullptr;
+    }
+
+    //Glad error handling
+    if (!gladLoadGL(glfwGetProcAddress))
+    {
+        std::cout << "Failed to initialize GLAD" << std::endl;
+        return nullptr;
+    }
+
+    glDisable(GL_CULL_FACE);
+    glEnable(GL_DEPTH_TEST);
+    glViewport(0, 0, width, height);
+    return window;
 }
 
 void Render::init(std::vector<GLfloat>& sphereVerticies, GLfloat* floorV, int floorV_size, int sphereVerticies_size){

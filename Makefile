@@ -10,7 +10,7 @@ IMGUI_SRC = \
     libs/imgui/backends/imgui_impl_glfw.cpp \
     libs/imgui/backends/imgui_impl_opengl3.cpp
 
-SRC = opengl.cpp sphere.cpp shader.cpp engine.cpp engine.h gl.c $(IMGUI_SRC)
+SRC = opengl.cpp sphere.cpp render.cpp engine.cpp engine.h gl.c $(IMGUI_SRC)
 
 TARGET = app
 
