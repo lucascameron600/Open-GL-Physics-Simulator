@@ -5,7 +5,7 @@ This physics simulation is written in C++ using GLFW for the window and OpenGL t
 ![gif](https://github.com/user-attachments/assets/f1c2c377-bd6c-4937-b32c-8994856aee0c)
 ## Description
 
-Using Verlet integration as the base physics engine, this project uses c++ to simulate real time physics like gravity and collision between objects. This initially started as a way to learn OpenGl but I tied it into a video I remember watching from Pezza's Work where he built something similiar with SFML. That video is linked below in the references section. Aside from using verlet, as I said before I took this opportunity to learn about OpenGl and that was a significant barrier to entry for me until I started trying to do it. In its current state it is unoptimized so I plan on adding verlet substeps to increase performance soon
+Using Verlet integration as the base numerical integrator, this project uses c++ to simulate real time physics like gravity and collision between objects. This initially started as a way to learn OpenGl but I tied it into a video I remember watching from Pezza's Work where he built something similiar with SFML. That video is linked below in the references section. Aside from using verlet, as I said before I took this opportunity to learn about OpenGl and that was a significant barrier to entry for me until I started trying to do it. In its current state it is unoptimized so I plan on adding verlet substeps to increase performance soon
 
 
 # Project Write up/Intro
@@ -20,7 +20,7 @@ At this point I had a working unit sphere and it really was beautiful, that bein
 Now that I was confident I could draw one sphere I decided to tackle the task of having multiple spheres, and even having gravity and collisions between multiple spheres. This required me to learn more about how physics is typically simulated in c++ typically people use Euler or Verlet integration to update object motion over time.
 
 Euler uses a very straightforward approach where velocity and position are updated based on acceleration and velocity is explicitly tracked in the sphere or particle class, but supposedly this is an unstable way to simulate particles that are interacting often. That being said the reason I chose not to use it is more simple. Everyone that I had seen make one of these simulations had used Verlet integration so thats ultimately why I decided to use Verlet. Verlet integration only uses the previous and current frames acceleration and position. Instead of tracking velocity we can just calculate it temporarily when we need it.
-I learned from others to structure my simulation so that forces like gravity could be applied as acceleration before each physics update, and then reset afterward. For collisions, I checked the distance between pairs of spheres and resolved overlaps by adjusting their positions and giving them a slight push in the opposite direction which can be adjusted. Becuase I did not use substeps in my verlet integration
+I learned from others to structure my simulation so that forces like gravity could be applied as acceleration before each physics update, and then reset afterward. For collisions, I checked the distance between pairs of spheres and resolved overlaps by adjusting their positions and giving them a slight push in the opposite direction which can be adjusted. Becuase I did not use substeps in my verlet integration there is a significant amount of performance improvement left on the table at this time.
 
 ## Organization 
 
