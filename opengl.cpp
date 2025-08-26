@@ -201,21 +201,6 @@ int main()
         glUniformMatrix4fv(glGetUniformLocation(shaderApp, "view"), 1, GL_FALSE, glm::value_ptr(view));
         glUniformMatrix4fv(glGetUniformLocation(shaderApp, "projection"), 1, GL_FALSE, glm::value_ptr(projection));
 
-        //bind all of our VBOs inside our VAO tells open gl we are using this VAO
-        //glBindVertexArray(VAO);
-        //tells opengl that we are using triangles 0 is the starting 
-        //index of our vertices and that we have 3 of them
-
-        //////////////////////////////////////////////////////
-        //draw floor then sphere
-        ////////////////////////////
-        //glm::mat4 floormodel = glm::mat4(1.0f);
-        //glUniformMatrix4fv(glGetUniformLocation(shaderApp, "model"), 1, GL_FALSE, glm::value_ptr(floormodel));
-        //setting color for frament shader to color floor
-        //glUniform4f(glGetUniformLocation(shaderApp, "inputColor"), 0.5f, 0.5f, 0.4f, 1.0f);
-        //glDrawArrays(GL_TRIANGLES, sphereVertexCount, floorVertexCount);
-
-
 
         //render here
         //make sure you swap the buffers!!!!
