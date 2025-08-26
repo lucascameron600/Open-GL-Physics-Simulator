@@ -7,12 +7,12 @@
 //default ctor
 Engine::Engine() {}
 
-void Engine::updatePhysics(Sphere& sphere, float deltaTime){
+void Engine::updatePhysics(Sphere& sphere){
     //temporary vertex to store sphere pos
     glm::vec3 temporary = sphere.spherePos;
     //main impplementation of verlet integration(predicting next step
     //based on motion)
-    sphere.spherePos = sphere.spherePos + (sphere.spherePos -sphere.prevPos) + sphere.acceleration * (deltaTime*deltaTime);
+    sphere.spherePos = sphere.spherePos + (sphere.spherePos -sphere.prevPos) + sphere.acceleration * (fixedDeltaTime*fixedDeltaTime);
     //updates position of last frame
     sphere.prevPos = temporary;
     //makes sure the force from this fame doesent effect the next
@@ -98,4 +98,28 @@ std::vector<Sphere> Engine::genSpheres(int numSpheres){
             spheres.push_back(sphere);
             }
         return spheres;
+}
+
+void Engine::runPhysics(std::vector<Sphere>& spheres, float& physicsAcc){
+    while(physicsAcc >= fixedDeltaTime){
+    
+        for(Sphere& sphere : spheres){
+            putForce(sphere, glm::vec3(0.0f, gravity, 0.0f), 0.1f);
+        }
+        for(Sphere& sphere : spheres){
+            updatePhysics(sphere);
+        }
+        for (size_t i = 0; i < spheres.size(); ++i) {
+            for (size_t j = i + 1; j < spheres.size(); ++j) {
+            checkCollision(spheres[i], spheres[j]);
+            }
+        }
+        for(Sphere& sphere : spheres){
+            floorCollision(sphere, 0.0f);
+        }
+        for(Sphere& sphere : spheres){
+            boundaryCollision(sphere, boundaryMinx, boundaryMaxx, boundaryMiny, boundaryMaxy, boundaryMinz, boundaryMaxz);
+        }
+        physicsAcc -= fixedDeltaTime;
+    }
 }

@@ -31,6 +31,7 @@ class Render{
         GLuint shaderApp;
         int sphereVertexCount;
         int floorVertexCount;
+        
 
 };
 

@@ -4,10 +4,11 @@
 #include <GLFW/glfw3.h>
 #include "engine.h"
 #include "sphere.h"
+#include "render.h"
+#include "parseobj.h"
 #include <glm/glm.hpp>
 #include <glm/gtc/type_ptr.hpp>
 #include <glm/gtc/matrix_transform.hpp>
-#include "render.h"
 #include "imgui.h"
 #include "imgui_impl_glfw.h"
 #include "imgui_impl_opengl3.h"
@@ -15,14 +16,7 @@
 
 //helps us with resizing glfwfamecallback
 
-float boundaryMaxx = 50.0f;
-float boundaryMinx = -50.0f;
 
-float boundaryMaxy = 50.0f;
-float boundaryMiny = 0.0f;
-
-float boundaryMaxz = 50.0f;
-float boundaryMinz = -50.0f;
 
 Render Render;
 Engine Engine;
@@ -56,23 +50,23 @@ float fov          = 90.0f;
 float screenWidth = 800;
 float screenHeight = 800;
 float aspectRatio  = (screenWidth/screenHeight);
-//acceleration constant for gravity
-float gravity = -9.85;
+
 
 //this helps us get depth perception. nearplane is the closest we will render verticies and farplane
 //is the farthest
 float nearPlane    = 0.1f;
 float farPlane     = 100.0f;
 
-//handle time
+//handle time caluclate fps
 float deltaTime = 0.0f;
 float lastFrame = 0.0f;
+//used constant time in physics and rendering
 
 //handles excape key and wasd
 bool bKeyPressed = false;
-
-//track delta time accumulation
 float physicsAccumulator = 0.0f;
+
+
 void getInput(GLFWwindow *window)
 {
     if(glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
@@ -106,9 +100,8 @@ int main()
     int firstSpheres = 5;
     int addBalls = 1;
 
-
     std::vector<Sphere> spheres = Engine.genSpheres(firstSpheres);
-    std::vector<GLfloat> verticies = parseOBJ();
+    std::vector<GLfloat> verticies = parseOBJForSphereVerticies();
     std::vector<GLfloat> combinedVerticies = verticies;
     combinedVerticies.insert(combinedVerticies.end(), std::begin(floorV), std::end(floorV));
 
@@ -149,7 +142,7 @@ int main()
         ImGui::Begin("Settings");
         ImGui::Text("GUI");
         ImGui::SliderFloat("Camera Speed", &cameraSpeed, 1.0f, 100.0f);
-        ImGui::SliderFloat("Gravity", &gravity, 0.0f, -30.0f);
+        //ImGui::SliderFloat("Gravity", &gravity, 0.0f, -30.0f);
         ImGui::SliderFloat("FOV", &fov, 30.0f, 120.0f);
         ImGui::SliderInt("Add Balls", &addBalls, 1, 20);
         ImGui::Text("Sphere Count: %zu", spheres.size());
@@ -176,6 +169,7 @@ int main()
         //the view matrix will use look at to orient the camera to the correct view.
         //projection uses fov in radians along with aspect ratio and our plane
         //cutoffs to help us define the 3d space we are in. it makes sure we have depth perspective.
+
         //this was before gravity//glm::mat4 model =       glm::mat4(1.0f); 
         //glm::mat4 model =       glm::translate(glm::mat4(1.0f), firstsphere.spherePos);
         glm::mat4 view =        glm::lookAt(cameraPos, cameraPos + cameraFront, cameraUp);
@@ -185,45 +179,27 @@ int main()
         glUniformMatrix4fv(glGetUniformLocation(shaderApp, "view"), 1, GL_FALSE, glm::value_ptr(view));
         glUniformMatrix4fv(glGetUniformLocation(shaderApp, "projection"), 1, GL_FALSE, glm::value_ptr(projection));
 
+        if (glfwGetKey(window, GLFW_KEY_B) == GLFW_PRESS) {
+            if (!bKeyPressed) {
+                Engine.addSpheres(spheres, addBalls);
+                bKeyPressed = true;
+            }
+        } 
+        else {
+            bKeyPressed = false;
+        }
 
         //render here
         //make sure you swap the buffers!!!!
+        
         Render.renderFloor();
         Render.renderSpheres(spheres);
+        Engine.runPhysics(spheres, physicsAccumulator);
 
 
-    if (glfwGetKey(window, GLFW_KEY_B) == GLFW_PRESS) {
-        if (!bKeyPressed) {
-            Engine.addSpheres(spheres, addBalls);
-            bKeyPressed = true;
-        }
-    } else {
-        bKeyPressed = false;
-    }
-        const float fixedDeltaTime = 0.016f;
 
-        while(physicsAccumulator >= fixedDeltaTime){
-        
-        for(Sphere& sphere : spheres){
-            Engine.putForce(sphere, glm::vec3(0.0f, gravity, 0.0f), 0.1f);
-        }
 
-        for(Sphere& sphere : spheres){
-            Engine.updatePhysics(sphere, fixedDeltaTime);
-        }
-        for (size_t i = 0; i < spheres.size(); ++i) {
-            for (size_t j = i + 1; j < spheres.size(); ++j) {
-            Engine.checkCollision(spheres[i], spheres[j]);
-            }
-        }
-        for(Sphere& sphere : spheres){
-            Engine.floorCollision(sphere, 0.0f);
-        }
-        for(Sphere& sphere : spheres){
-            Engine.boundaryCollision(sphere, boundaryMinx, boundaryMaxx, boundaryMiny, boundaryMaxy, boundaryMinz, boundaryMaxz);
-        }
-        physicsAccumulator -= fixedDeltaTime;
-    }
+
 
         ImGui::Render();
         ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
@@ -231,13 +207,12 @@ int main()
         glfwPollEvents();    
     }
     
-
-
     ////clean up vertex buffer and vertex array on gpu after all work is done
     Render.cleanUp(); 
     Render.imguiCleanup();
 
-
     glfwTerminate();
     return 0;
 }
+
+
