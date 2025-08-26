@@ -7,6 +7,9 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
+#include "imgui.h"
+#include "imgui_impl_glfw.h"
+#include "imgui_impl_opengl3.h"
 
 //depricated vertex shader
 ////vertex shader source code
@@ -123,6 +126,20 @@ GLFWwindow* Render::glfwSetup(int width, int height, const char* title){
     glEnable(GL_DEPTH_TEST);
     glViewport(0, 0, width, height);
     return window;
+}
+
+void Render::imguiSetup(GLFWwindow* window){
+    IMGUI_CHECKVERSION();
+    ImGui::CreateContext();
+    ImGuiIO& imio = ImGui::GetIO(); (void) imio;
+    ImGui_ImplGlfw_InitForOpenGL(window, true);
+    ImGui_ImplOpenGL3_Init("#version 330");
+}
+
+void Render::imguiCleanup(){
+    ImGui_ImplOpenGL3_Shutdown();
+    ImGui_ImplGlfw_Shutdown();
+    ImGui::DestroyContext();
 }
 
 void Render::init(std::vector<GLfloat>& sphereVerticies, GLfloat* floorV, int floorV_size, int sphereVerticies_size){

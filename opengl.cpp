@@ -105,32 +105,19 @@ int main()
 
     int firstSpheres = 5;
     int addBalls = 1;
+
+
     std::vector<Sphere> spheres = Engine.genSpheres(firstSpheres);
-
-    Sphere firstsphere;
-
-
     std::vector<GLfloat> verticies = parseOBJ();
     std::vector<GLfloat> combinedVerticies = verticies;
     combinedVerticies.insert(combinedVerticies.end(), std::begin(floorV), std::end(floorV));
 
     GLFWwindow* window = Render.glfwSetup(screenWidth, screenHeight, "Spheres!");
 
-    
     Render.init(verticies, floorV, sizeof(floorV)/sizeof(GLfloat), verticies.size());
 
-
-
+    Render.imguiSetup(window);
     //main while loop
-
-    IMGUI_CHECKVERSION();
-    ImGui::CreateContext();
-    ImGuiIO& imio = ImGui::GetIO(); (void) imio;
-    ImGui_ImplGlfw_InitForOpenGL(window, true);
-    ImGui_ImplOpenGL3_Init("#version 330");
-
-    
-
     while(!glfwWindowShouldClose(window))
     {
 
@@ -150,9 +137,6 @@ int main()
 
         frames++;
         timer += deltaTime;
-
-
-
 
         //clear screen and change the color 
         glClearColor(1.0f, 0.6f, 0.6f, 1.0f);
@@ -241,27 +225,17 @@ int main()
         physicsAccumulator -= fixedDeltaTime;
     }
 
-//        for (Sphere& sphere : spheres) {
-//            glm::mat4 model = glm::translate(glm::mat4(1.0f), sphere.spherePos);
-//            glUniformMatrix4fv(glGetUniformLocation(shaderApp, "model"), 1, GL_FALSE, glm::value_ptr(model));
-//        
-//            glUniform4f(glGetUniformLocation(shaderApp, "inputColor"), 0.1f, 0.9f, 0.1f, 1.0f); // Optional: vary per-sphere
-//            glDrawArrays(GL_TRIANGLES, 0, sphereVertexCount);
-//        }
         ImGui::Render();
         ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
-
         glfwSwapBuffers(window);
         glfwPollEvents();    
     }
     
-    ImGui_ImplOpenGL3_Shutdown();
-    ImGui_ImplGlfw_Shutdown();
-    ImGui::DestroyContext();
+
 
     ////clean up vertex buffer and vertex array on gpu after all work is done
     Render.cleanUp(); 
-
+    Render.imguiCleanup();
 
 
     glfwTerminate();
