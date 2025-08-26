@@ -13,11 +13,6 @@
 #include "imgui_impl_glfw.h"
 #include "imgui_impl_opengl3.h"
 
-
-//helps us with resizing glfwfamecallback
-
-
-
 Render Render;
 Engine Engine;
 
@@ -32,7 +27,6 @@ GLfloat floorV[] = {
     -50.0f, 0.0f,  50.0f
 };
 
-
 //cameraPos camera front and camera up help us define the space we
 //will move around based on these cordingates we also
 //have camera up 
@@ -44,28 +38,23 @@ glm::vec3 cameraUp = glm::vec3(0.0f, 1.0f, 0.0f);
 ////////////////////////////////
 //helps adjust rate at which camera moves
 float cameraSpeed = 10.0f;
-
 //fov set to whatever the user wants 
 float fov          = 90.0f;
 float screenWidth = 800;
 float screenHeight = 800;
 float aspectRatio  = (screenWidth/screenHeight);
-
-
 //this helps us get depth perception. nearplane is the closest we will render verticies and farplane
 //is the farthest
 float nearPlane    = 0.1f;
 float farPlane     = 100.0f;
-
 //handle time caluclate fps
 float deltaTime = 0.0f;
 float lastFrame = 0.0f;
-//used constant time in physics and rendering
+//used constant time in physics
 
 //handles excape key and wasd
 bool bKeyPressed = false;
 float physicsAccumulator = 0.0f;
-
 
 void getInput(GLFWwindow *window)
 {
@@ -93,7 +82,6 @@ void getInput(GLFWwindow *window)
 
 }
 
-
 int main()
 {
 
@@ -102,8 +90,7 @@ int main()
 
     std::vector<Sphere> spheres = Engine.genSpheres(firstSpheres);
     std::vector<GLfloat> verticies = parseOBJForSphereVerticies();
-    std::vector<GLfloat> combinedVerticies = verticies;
-    combinedVerticies.insert(combinedVerticies.end(), std::begin(floorV), std::end(floorV));
+
 
     GLFWwindow* window = Render.glfwSetup(screenWidth, screenHeight, "Spheres!");
 
@@ -172,6 +159,10 @@ int main()
 
         //this was before gravity//glm::mat4 model =       glm::mat4(1.0f); 
         //glm::mat4 model =       glm::translate(glm::mat4(1.0f), firstsphere.spherePos);
+
+        //////////////////////////
+        //PUT IN FUNC IN RENDER
+        /////////////////////////////
         glm::mat4 view =        glm::lookAt(cameraPos, cameraPos + cameraFront, cameraUp);
         glm::mat4 projection =  glm::perspective(glm::radians(fov), aspectRatio, nearPlane, farPlane);
         //here we are sending the matricies to the GPU using a pointer to where they start
@@ -195,11 +186,6 @@ int main()
         Render.renderFloor();
         Render.renderSpheres(spheres);
         Engine.runPhysics(spheres, physicsAccumulator);
-
-
-
-
-
 
         ImGui::Render();
         ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());

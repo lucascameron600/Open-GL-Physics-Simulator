@@ -144,8 +144,8 @@ void Render::imguiCleanup(){
 
 void Render::init(std::vector<GLfloat>& sphereVerticies, GLfloat* floorV, int floorV_size, int sphereVerticies_size){
     shaderApp = compileShaderProg(); 
-
-
+    //floorVertexCount = sizeof(floorV)/sizeof(GLfloat)
+    
     // Combine both into one buffer
     floorVertexCount = floorV_size;
     sphereVertexCount = sphereVerticies_size;
