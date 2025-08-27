@@ -145,7 +145,7 @@ void Render::imguiCleanup(){
 void Render::init(std::vector<GLfloat>& sphereVerticies, GLfloat* floorV, int floorV_size, int sphereVerticies_size){
     shaderApp = compileShaderProg(); 
     //floorVertexCount = sizeof(floorV)/sizeof(GLfloat)
-    
+
     // Combine both into one buffer
     floorVertexCount = floorV_size;
     sphereVertexCount = sphereVerticies_size;
@@ -157,11 +157,13 @@ void Render::init(std::vector<GLfloat>& sphereVerticies, GLfloat* floorV, int fl
     // Create VAO and VBO
     glGenVertexArrays(1, &VAO);
     glGenBuffers(1, &VBO);
+    //glGenBuffers(1, &instanceVBO)
 
-    glBindVertexArray(VAO);
+    
     glBindBuffer(GL_ARRAY_BUFFER, VBO);
     glBufferData(GL_ARRAY_BUFFER, combinedVerticies.size() * sizeof(GLfloat), combinedVerticies.data(), GL_STATIC_DRAW);
-
+    
+    glBindVertexArray(VAO);
     // Position attribute (layout location 0)
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
     glEnableVertexAttribArray(0);
@@ -194,6 +196,7 @@ void Render::renderSpheres(std::vector<Sphere>& spheres){
         glUniformMatrix4fv(glGetUniformLocation(shaderApp, "model"), 1, GL_FALSE, glm::value_ptr(model));
         glUniform4f(glGetUniformLocation(shaderApp, "inputColor"), 0.1f, 0.9f, 0.1f, 1.0f);
         glDrawArrays(GL_TRIANGLES, 0, sphereVertexCount/3);
+        //glDrawArraysInstanced(GL_TRIANGLES, 0, sphereVertexCount / 3, spheres.size());
     }
     glBindVertexArray(0);
 }
