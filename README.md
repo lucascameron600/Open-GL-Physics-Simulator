@@ -32,7 +32,6 @@ It taught me how to structure a C++ application that interacts really close with
 
 ### Dependencies
 
-* Describe any prerequisites, libraries, OS version, etc., needed before installing program.
 * Linux
 * CMake
 * ImGui
@@ -44,9 +43,18 @@ It taught me how to structure a C++ application that interacts really close with
 * KHR
 
 ### Installing/Executing
-Install Linux
-Install GLFW
+Must be operated on Windows / Linux
+Install GLFW 
+sudo apt-get install libglfw3-dev
+
+### Using
+Adjust sliders to your preferences
+Press B to generate balls
+wasd to move around on a flat plane, space to move up, shift to move down
+
 Install GLM
+sudo apt-get install libglm-dev
+
 Clone directory and inside use the command Make if you already have CMake installed
 ./app
 
