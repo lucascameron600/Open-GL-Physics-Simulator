@@ -138,13 +138,6 @@ int main()
         ImGui::Text("FPS: %.1f", 1.0f / deltaTime);
         ImGui::End();
 
-        //Change between a wireframe fill and full fill helps
-        //to see the 3d component without lighting
-        bool wireframe = false;
-        if (wireframe)
-            glPolygonMode(GL_FRONT_AND_BACK, GL_LINE); // Wireframe mode
-        else
-        glPolygonMode(GL_FRONT_AND_BACK, GL_FILL); // Solid mode
 
         getInput(window);
 
@@ -158,14 +151,9 @@ int main()
         //projection uses fov in radians along with aspect ratio and our plane
         //cutoffs to help us define the 3d space we are in. it makes sure we have depth perspective.
 
-        //this was before gravity//glm::mat4 model =       glm::mat4(1.0f); 
-        //glm::mat4 model =       glm::translate(glm::mat4(1.0f), firstsphere.spherePos);
-
-        //////////////////////////
-        //PUT IN FUNC IN RENDER
-        /////////////////////////////
         glm::mat4 view =        glm::lookAt(cameraPos, cameraPos + cameraFront, cameraUp);
         glm::mat4 projection =  glm::perspective(glm::radians(fov), aspectRatio, nearPlane, farPlane);
+        
         //here we are sending the matricies to the GPU using a pointer to where they start
         //sglUniformMatrix4fv(glGetUniformLocation(shaderApp, "model"), 1, GL_FALSE, glm::value_ptr(model));
         glUniformMatrix4fv(glGetUniformLocation(shaderApp, "view"), 1, GL_FALSE, glm::value_ptr(view));
