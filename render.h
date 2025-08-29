@@ -7,6 +7,8 @@
 #include <glad/gl.h>      
 #include <glm/glm.hpp>  
 #include <glm/gtc/type_ptr.hpp>
+#include <GLFW/glfw3.h>
+
 GLuint compileShaderProg();
 
 class Render{

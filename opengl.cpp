@@ -5,6 +5,7 @@
 #include "engine.h"
 #include "sphere.h"
 #include "render.h"
+#include "camera.h"
 #include "parseobj.h"
 #include <glm/glm.hpp>
 #include <glm/gtc/type_ptr.hpp>
@@ -15,6 +16,7 @@
 
 Render Render;
 Engine Engine;
+
 
 
 GLfloat floorV[] = {
@@ -28,26 +30,16 @@ GLfloat floorV[] = {
     -50.0f, 0.0f,  50.0f
 };
 
-//cameraPos camera front and camera up help us define the space we
-//will move around based on these cordingates we also
-//have camera up 
-glm::vec3 cameraPos = glm::vec3(0.0f, 5.0f, 15.0f);
-glm::vec3 cameraFront = glm::vec3(0.0f, 0.0f, -1.0f);
-glm::vec3 cameraUp = glm::vec3(0.0f, 1.0f, 0.0f);
-//////////////////////////////////////////////////////////
-/////////////GLOBALCONSTANTS////////////////////////
-////////////////////////////////
-//helps adjust rate at which camera moves
-float cameraSpeed = 10.0f;
-//fov set to whatever the user wants 
-float fov          = 90.0f;
+
+
 float screenWidth = 800;
 float screenHeight = 800;
-float aspectRatio  = (screenWidth/screenHeight);
+Camera Camera(screenWidth, screenHeight);
+//float aspectRatio  = (screenWidth/screenHeight);
 //this helps us get depth perception. nearplane is the closest we will render verticies and farplane
 //is the farthest
-float nearPlane    = 0.1f;
-float farPlane     = 100.0f;
+//float nearPlane    = 0.1f;
+//float farPlane     = 100.0f;
 //handle time caluclate fps
 float deltaTime = 0.0f;
 float lastFrame = 0.0f;
@@ -57,31 +49,6 @@ float lastFrame = 0.0f;
 bool bKeyPressed = false;
 float physicsAccumulator = 0.0f;
 
-void getInput(GLFWwindow *window)
-{
-    if(glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
-        glfwSetWindowShouldClose(window, true);
-    
-    // movement along the plane with WASD
-    if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
-        //we travel in the z direction positively by multiplying cameraspeed by the direction of our camera and adding
-        //it back to pos
-        cameraPos += cameraSpeed * cameraFront * deltaTime;
-    if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
-        cameraPos -= cameraSpeed * cameraFront * deltaTime;
-    if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
-    //here we take the cross product of camerafront and camera up, we then add it to camera pos and 
-    //the normilization is to smooth it out. this gives us a vector perpendicular to camera front and up which is
-    //to the left
-        cameraPos -= glm::normalize(glm::cross(cameraFront, cameraUp)) * cameraSpeed * deltaTime;
-    if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
-        cameraPos += glm::normalize(glm::cross(cameraFront, cameraUp)) * cameraSpeed* deltaTime;
-    if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS)
-        cameraPos += cameraUp * cameraSpeed * deltaTime;
-    if (glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS)
-        cameraPos -= cameraUp * cameraSpeed * deltaTime;
-
-}
 
 int main()
 {
@@ -129,9 +96,9 @@ int main()
 
         ImGui::Begin("Settings");
         ImGui::Text("GUI");
-        ImGui::SliderFloat("Camera Speed", &cameraSpeed, 1.0f, 100.0f);
+        ImGui::SliderFloat("Camera Speed", &Camera.speed, 1.0f, 100.0f);
         //ImGui::SliderFloat("Gravity", &gravity, 0.0f, -30.0f);
-        ImGui::SliderFloat("FOV", &fov, 30.0f, 120.0f);
+        ImGui::SliderFloat("FOV", &Camera.fov, 30.0f, 120.0f);
         ImGui::SliderInt("Add Balls", &addBalls, 1, 20);
         ImGui::Text("Sphere Count: %zu", spheres.size());
         ImGui::Text("Sphere Y Position: %.2f", spheres[0].spherePos.y);
@@ -139,7 +106,7 @@ int main()
         ImGui::End();
 
 
-        getInput(window);
+        Camera.processInput(window, deltaTime);
 
         //activate shader program that we built earlier
         GLuint shaderApp = Render.getShaderApp();
@@ -151,8 +118,8 @@ int main()
         //projection uses fov in radians along with aspect ratio and our plane
         //cutoffs to help us define the 3d space we are in. it makes sure we have depth perspective.
 
-        glm::mat4 view =        glm::lookAt(cameraPos, cameraPos + cameraFront, cameraUp);
-        glm::mat4 projection =  glm::perspective(glm::radians(fov), aspectRatio, nearPlane, farPlane);
+        glm::mat4 view =        Camera.getViewMatrix();
+        glm::mat4 projection =  Camera.getProjectionMatrix();
         
         //here we are sending the matricies to the GPU using a pointer to where they start
         //sglUniformMatrix4fv(glGetUniformLocation(shaderApp, "model"), 1, GL_FALSE, glm::value_ptr(model));
@@ -168,6 +135,7 @@ int main()
         else {
             bKeyPressed = false;
         }
+
 
         //render here
         //make sure you swap the buffers!!!!
