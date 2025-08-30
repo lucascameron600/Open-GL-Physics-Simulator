@@ -17,8 +17,6 @@
 Render Render;
 Engine Engine;
 
-
-
 GLfloat floorV[] = {
     
     -50.0f, 0.0f, -50.0f,

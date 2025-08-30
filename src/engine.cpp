@@ -4,6 +4,7 @@
 #include <glm/gtc/constants.hpp>
 #include "sphere.h"
 
+
 //default ctor
 Engine::Engine() {}
 
@@ -109,6 +110,7 @@ void Engine::runPhysics(std::vector<Sphere>& spheres, float& physicsAcc){
         for(Sphere& sphere : spheres){
             updatePhysics(sphere);
         }
+        //this is O(n^2) time complexity currently which I think is a cpu bottleneck for rendering more spheres.
         for (size_t i = 0; i < spheres.size(); ++i) {
             for (size_t j = i + 1; j < spheres.size(); ++j) {
             checkCollision(spheres[i], spheres[j]);
