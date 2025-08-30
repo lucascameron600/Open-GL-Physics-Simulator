@@ -5,7 +5,7 @@ This physics simulation is written in C++ using GLFW for the window and OpenGL a
 ![gif](https://github.com/user-attachments/assets/f1c2c377-bd6c-4937-b32c-8994856aee0c)
 ## Description
 
-Using Verlet integration as the base numerical integrator, this project uses c++ to simulate real time physics like gravity and collision between objects. This initially started as a way to learn OpenGl but I tied it into a video I remember watching from Pezza's Work where he built something similiar with SFML. That video is linked below in the references section. Aside from using verlet, as I said before I took this opportunity to learn about the basiscs of OpenGl.  In its current state it is unoptimized so I plan on trying to implement instanced rendering and broad/narrow scope collision. This will significantly improve the number of spheres I can draw to the screen.
+Using Verlet integration as the base numerical integrator, this project uses c++ to simulate real time physics like gravity and collision between objects. This initially started as a way to learn OpenGl but I tied it into a video I remember watching from Pezza's Work where he built something similiar with SFML. That video is linked below in the references section.  In its current state it is unoptimized so I plan on trying to implement instanced rendering and broad/narrow scope collision. This will significantly improve the number of spheres I can draw to the screen.
 
 
 # Project Write up/Intro
