@@ -1,6 +1,6 @@
 # OpenGl Physics Simulation
 
-This physics simulation is written in C++ using GLFW for the window and OpenGL as an API to render multiple particles/spheres to the screen, I also briefly write GLSL in the Vertex and Fragment shaders. ImGui is also used for adjusting values and providing a minimal ui
+This physics simulation is written in C++ using GLFW for the window and OpenGL as an API to render multiple particles/spheres to the screen, I also briefly write GLSL in the Vertex and Fragment shaders. ImGui is used for adjusting values and providing a minimal ui
 
 ![gif](https://github.com/user-attachments/assets/f1c2c377-bd6c-4937-b32c-8994856aee0c)
 ## Description
@@ -48,19 +48,17 @@ It taught me how to structure a C++ application that interacts really close with
 Must be operated on Windows / Linux
 Install GLFW 
 sudo apt-get install libglfw3-dev
+Install GLM
+sudo apt-get install libglm-dev
+
+### Executing program
+Clone directory and inside use the command Make if you already have CMake installed
+./app
 
 ### Using
 Adjust sliders to your preferences
 Press B to generate balls
 wasd to move around on a flat plane, space to move up, shift to move down
-
-Install GLM
-sudo apt-get install libglm-dev
-
-Clone directory and inside use the command Make if you already have CMake installed
-./app
-
-### Executing program
 
 ## Authors
 
