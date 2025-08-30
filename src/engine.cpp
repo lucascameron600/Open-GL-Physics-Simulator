@@ -13,7 +13,10 @@ void Engine::performVerlet(Sphere& sphere){
     glm::vec3 temporary = sphere.spherePos;
     //main impplementation of verlet integration(predicting next step
     //based on motion)
-    sphere.spherePos = sphere.spherePos + (sphere.spherePos -sphere.prevPos) + sphere.acceleration * (fixedDeltaTime*fixedDeltaTime);
+    // changed this to not use as many temporary vectors
+    glm::vec3 velocity = sphere.spherePos - sphere.prevPos;
+    glm::vec3 accelerationTerm = sphere.acceleration * (fixedDeltaTime * fixedDeltaTime);
+    sphere.spherePos = sphere.spherePos + velocity + accelerationTerm;
     //updates position of last frame
     sphere.prevPos = temporary;
     //makes sure the force from this fame doesent effect the next

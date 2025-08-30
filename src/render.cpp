@@ -13,19 +13,6 @@
 #include <GLFW/glfw3.h>
 
 
-//depricated vertex shader
-////vertex shader source code
-//const char* vShaderSource = "#version 330 core\n"
-//"layout (location = 0) in vec4 aPos;\n"
-//"void main()\n"
-//"{\n"
-//"   gl_Position = vec4(aPos.x, aPos.y, aPos.z, 1.0);\n"
-
-//////////////////////////////////////////////////////////////////
-//inside this shader, i have added model view and projection matrixes
-//in order to accept the data we will send to the gpu
-//we then perform matrix multiplication on them to perform the nessacary
-//transformations
 
 const char* vShaderSource = R"glsl(
     #version 330 core

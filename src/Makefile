@@ -1,6 +1,6 @@
 CXX = g++
-CXXFLAGS = -g -Wall -I../include -I../libs/imgui -I../libs/imgui/backends
-LDFLAGS = -lglfw -ldl -lGL -lX11 -lXxf86vm -lXcursor -lXinerama
+CXXFLAGS = -g -pg -Wall -I../include -I../libs/imgui -I../libs/imgui/backends
+LDFLAGS = -pg -lglfw -ldl -lGL -lX11 -lXxf86vm -lXcursor -lXinerama
 
 IMGUI_SRC = \
     ../libs/imgui/imgui.cpp \
@@ -10,7 +10,7 @@ IMGUI_SRC = \
     ../libs/imgui/backends/imgui_impl_glfw.cpp \
     ../libs/imgui/backends/imgui_impl_opengl3.cpp
 
-SRC = main.cpp camera.cpp sphere.cpp render.cpp parseobj.cpp engine.cpp engine.h gl.c $(IMGUI_SRC)
+SRC = main.cpp camera.cpp sphere.cpp render.cpp parseobj.cpp engine.cpp gl.c $(IMGUI_SRC)
 
 TARGET = app
 
