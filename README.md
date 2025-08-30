@@ -23,7 +23,7 @@ Euler uses a very straightforward approach where velocity and position are updat
 I learned from others to structure my simulation so that forces like gravity could be applied as acceleration before each physics update, and then reset afterward. For collisions, I checked the distance between pairs of spheres and resolved overlaps by adjusting their positions and giving them a slight push in the opposite direction which can be adjusted. Becuase I did not use substeps in my verlet integration there is a significant amount of performance improvement left on the table at this time.
 
 ## What I am still adding
-  Currently I am still working on upgrading this project by using instanced rending for my spheres. Instead of telling the GPU to draw every single vertex every frame I can instance the models, currently reading more.
+  Currently I am still working on upgrading this project by using instanced rending for my spheres. Instead of telling the GPU to draw every single vertex every frame I can instance the models, currently reading more. The other thing I am currently trying to implement is better collision. Naive collision is N^2 runtime which I need to reduce. Typically this is done with different phases of collision(broad/narrow) to rule out particles/spheres that will not collide.
 
 ## Final thoughts
 
