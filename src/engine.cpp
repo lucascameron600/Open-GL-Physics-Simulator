@@ -8,7 +8,7 @@
 //default ctor
 Engine::Engine() {}
 
-void Engine::updatePhysics(Sphere& sphere){
+void Engine::performVerlet(Sphere& sphere){
     //temporary vertex to store sphere pos
     glm::vec3 temporary = sphere.spherePos;
     //main impplementation of verlet integration(predicting next step
@@ -106,21 +106,15 @@ void Engine::runPhysics(std::vector<Sphere>& spheres, float& physicsAcc){
     
         for(Sphere& sphere : spheres){
             putForce(sphere, glm::vec3(0.0f, gravity, 0.0f), 0.1f);
-        }
-        for(Sphere& sphere : spheres){
-            updatePhysics(sphere);
+            performVerlet(sphere);
+            floorCollision(sphere, 0.0f);
+            boundaryCollision(sphere, boundaryMinx, boundaryMaxx, boundaryMiny, boundaryMaxy, boundaryMinz, boundaryMaxz);
         }
         //this is O(n^2) time complexity currently which I think is a cpu bottleneck for rendering more spheres.
         for (size_t i = 0; i < spheres.size(); ++i) {
             for (size_t j = i + 1; j < spheres.size(); ++j) {
             checkCollision(spheres[i], spheres[j]);
             }
-        }
-        for(Sphere& sphere : spheres){
-            floorCollision(sphere, 0.0f);
-        }
-        for(Sphere& sphere : spheres){
-            boundaryCollision(sphere, boundaryMinx, boundaryMaxx, boundaryMiny, boundaryMaxy, boundaryMinz, boundaryMaxz);
         }
         physicsAcc -= fixedDeltaTime;
     }

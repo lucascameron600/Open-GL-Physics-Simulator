@@ -9,7 +9,7 @@ class Engine{
 public:
     Engine();
 
-    void updatePhysics(Sphere& sphere);
+    void performVerlet(Sphere& sphere);
     void putForce(Sphere& sphere, glm::vec3 force, float mass);
     void checkCollision(Sphere& sphere1, Sphere& sphere2);
     void floorCollision(Sphere& sphere, float floorY = 0.0f);
