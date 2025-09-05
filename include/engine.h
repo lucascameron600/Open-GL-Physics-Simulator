@@ -17,6 +17,7 @@ public:
     void addSpheres(std::vector<Sphere>& spheres, int count);
     std::vector<Sphere> genSpheres(int numSpheres);
     void runPhysics(std::vector<Sphere>& spheres, float& physicsAcc);
+    void runPhysicsMultithread(std::vector<Sphere>& spheres, float& physicsAcc);
 
 private:
 
