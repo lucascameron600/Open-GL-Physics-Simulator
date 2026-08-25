@@ -45,11 +45,11 @@ It taught me how to structure a C++ application that interacts really close with
 * KHR
 
 ### Installing/Executing
-Must be operated on Windows / Linux
-Install GLFW 
-sudo apt-get install libglfw3-dev
-Install GLM
-sudo apt-get install libglm-dev
+- Must be operated on Windows / Linux
+- Install GLFW 
+- sudo apt-get install libglfw3-dev
+- Install GLM
+- sudo apt-get install libglm-dev
 
 ### Executing program
 Clone directory and inside use the command Make if you already have CMake installed
