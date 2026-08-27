@@ -115,7 +115,7 @@ void Engine::runPhysics(std::vector<Sphere>& spheres, float& physicsAcc){
             boundaryCollision(sphere, boundaryMinx, boundaryMaxx, boundaryMiny, boundaryMaxy, boundaryMinz, boundaryMaxz);
         }
         //this is O(n^2) time complexity currently which I think is a cpu bottleneck for rendering more spheres.
-        //if 500 spheres are generated there will be 250,000 collision checks per physics step, lol
+        //if 500 spheres are generated there will be 125000 collision checks per physics step
         for (size_t i = 0; i < spheres.size(); ++i) {
             for (size_t j = i + 1; j < spheres.size(); ++j) {
             checkCollision(spheres[i], spheres[j]);
