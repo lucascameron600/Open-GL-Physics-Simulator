@@ -79,6 +79,7 @@ void Engine::boundaryCollision(Sphere& sphere, float boundaryMinx, float boundar
         pos.z = boundaryMaxz - sphere.radius;
         vel.z *= -1.0f;
     }
+    sphere.prevPos = sphere.spherePos - vel;
 }
 void Engine::addSpheres(std::vector<Sphere>& spheres, int count){
     for (int i = 0; i < count; ++i) {
