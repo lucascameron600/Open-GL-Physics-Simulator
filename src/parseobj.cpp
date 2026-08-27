@@ -16,11 +16,13 @@ std::vector<GLfloat> parseOBJForSphereVerticies() {
 
     if (file.is_open()) {
         while (std::getline(file, line)) {
+
             std::stringstream stream(line);
             std::string type;
             stream >> type;
 
             if (type == "v") {
+
                 float x, y, z;
                 stream >> x >> y >> z;
 
@@ -29,10 +31,12 @@ std::vector<GLfloat> parseOBJForSphereVerticies() {
                 verticies.push_back(z);
 
             } else if (type == "f") {
+
                 std::string v1, v2, v3;
                 stream >> v1 >> v2 >> v3;
     
                 for (const std::string& v : {v1, v2, v3}) {
+
                     int index = std::stoi(v.substr(0, v.find('/'))) - 1;
                     int offset = index *3;
                     finalVerticies.push_back(verticies[offset]);
@@ -42,8 +46,9 @@ std::vector<GLfloat> parseOBJForSphereVerticies() {
             }
         }
         file.close();
+
     } else {
-        std::cerr << "failed obj file" << std::endl;
+        std::cout << "failed obj file" << std::endl;
     }
 
     return finalVerticies;

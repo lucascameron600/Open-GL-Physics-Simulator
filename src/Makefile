@@ -1,5 +1,5 @@
 CXX = g++
-CXXFLAGS = -g -pg -Wall -I../include -I../libs/imgui -I../libs/imgui/backends
+CXXFLAGS = -O2 -Wall -I../include -I../libs/imgui -I../libs/imgui/backends
 LDFLAGS = -pg -lglfw -ldl -lGL -lX11 -lXxf86vm -lXcursor -lXinerama
 
 IMGUI_SRC = \
