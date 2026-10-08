@@ -5,7 +5,7 @@
 # OpenGL Verlet Physics Simulation
 
 A real-time 3D physics sandbox written in C++ and OpenGL 3.3. Spheres fall under gravity, bounce off the floor and walls, and collide with each other. Motion uses Verlet integration on a fixed time step. Rendering uses a small pipeline (GLFW window, GLSL shaders, GLM matrices), with a Dear ImGui panel for live controls.
-
+![gif](https://github.com/user-attachments/assets/f1c2c377-bd6c-4937-b32c-8994856aee0c)
 
 ## Features
 
