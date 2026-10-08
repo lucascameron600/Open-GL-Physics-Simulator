@@ -93,7 +93,7 @@ I built this to learn OpenGL and real-time simulation without a game engine: the
 
 ## Screenshots
 
-
+<img width="400" alt="Screenshot of the simulation" src="https://github.com/user-attachments/assets/c2d606ba-1810-4070-80ef-1370cdacfcd6" /> <img width="400" alt="Screenshot of the simulation" src="https://github.com/user-attachments/assets/9b21b9e6-339b-44a5-a218-6eaa820ec4e1" /> <img width="400" alt="Screenshot of the simulation" src="https://github.com/user-attachments/assets/05e27793-141e-4434-8547-cb7ef0807589" /> <img width="400" alt="Screenshot of the simulation" src="https://github.com/user-attachments/assets/dbf2a4ae-39de-4a62-a311-c80029e8977a" />
 ![Simulation running](https://github.com/user-attachments/assets/e7f99bc2-9cfe-49c9-95c2-74c7e9a7ca61)
 
 ## Credits
